@@ -20,6 +20,8 @@ function App() {
 
   const [atsScore, setAtsScore] = useState(0)
   const [feedback, setFeedback] = useState([])
+  const [foundSections, setFoundSections] = useState([])
+  const [missingSections, setMissingSections] = useState([])
 
   const fileInputRef = useRef(null)
 
@@ -49,6 +51,9 @@ function App() {
       setAtsScore(0)
       setFeedback([])
 
+      setFoundSections([])
+      setMissingSections([])
+      
       const response = await API.post(
         "/resume/upload",
         formData,
@@ -68,6 +73,10 @@ function App() {
       setAtsScore(response.data.ats_score)
 
       setFeedback(response.data.feedback)
+
+      setFoundSections(response.data.found_sections)
+
+      setMissingSections(response.data.missing_sections)
 
     } catch (error) {
 
@@ -317,7 +326,73 @@ function App() {
           </section>
         )
       }
+        {
+  (foundSections.length > 0 || missingSections.length > 0) && (
+    <section
+      style={{
+        maxWidth: "1000px",
+        margin: "40px auto",
+        padding: "20px",
+        border: "1px solid #333",
+        borderRadius: "12px"
+      }}
+    >
+      <h2>Resume Section Analysis</h2>
 
+      <div
+        style={{
+          display: "flex",
+          gap: "40px",
+          flexWrap: "wrap",
+          marginTop: "20px"
+        }}
+      >
+
+        <div style={{ flex: 1 }}>
+
+          <h3>Found Sections</h3>
+
+          <ul
+            style={{
+              textAlign: "left"
+            }}
+          >
+            {
+              foundSections.map((section, index) => (
+                <li key={index}>
+                  ✅ {section}
+                </li>
+              ))
+            }
+          </ul>
+
+        </div>
+
+        <div style={{ flex: 1 }}>
+
+          <h3>Missing Sections</h3>
+
+          <ul
+            style={{
+              textAlign: "left"
+            }}
+          >
+            {
+              missingSections.map((section, index) => (
+                <li key={index}>
+                  ❌ {section}
+                </li>
+              ))
+            }
+          </ul>
+
+        </div>
+
+      </div>
+
+    </section>
+  )
+}
       {
         skills.length > 0 && (
           <section
