@@ -6,6 +6,8 @@ from app.api.routes.resume import router as resume_router
 app = FastAPI()
 
 origins = [
+    "https://resumetic.netlify.app",
+
     "http://localhost:5173",
     "http://localhost:5174",
     "http://localhost:5175",
@@ -13,6 +15,7 @@ origins = [
     "http://localhost:5177",
     "http://localhost:5178",
     "http://localhost:5179",
+
     "http://127.0.0.1:5173",
     "http://127.0.0.1:5179",
 ]
