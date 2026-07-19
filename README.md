@@ -243,7 +243,7 @@ https://github.com/Vardhcr
 
 LinkedIn
 
-www.linkedin.com/in/jyothivardhan-bonumuddula-b872b3326
+https://www.linkedin.com/in/jyothivardhan-bonumuddula-b872b3326
 ---
 
 # License
