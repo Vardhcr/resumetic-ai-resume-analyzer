@@ -1,6 +1,5 @@
 import re
 
-
 # ==========================================
 # SECTION ALIASES
 # ==========================================
@@ -89,12 +88,13 @@ SECTION_PATTERNS = {
 # ANALYZE RESUME SECTIONS
 # ==========================================
 
-def analyze_resume_sections(text):
+def analyze_resume_sections(text: str):
 
     text = text.lower()
 
     found_sections = []
     missing_sections = []
+    sections = {}
 
     for section, aliases in SECTION_PATTERNS.items():
 
@@ -105,20 +105,31 @@ def analyze_resume_sections(text):
             pattern = r"\b" + re.escape(alias.lower()) + r"\b"
 
             if re.search(pattern, text):
-
                 found = True
                 break
 
+        sections[section] = found
+
         if found:
             found_sections.append(section)
-
         else:
             missing_sections.append(section)
 
     return {
 
+        "sections": sections,
+
         "found_sections": sorted(found_sections),
 
-        "missing_sections": sorted(missing_sections)
+        "missing_sections": sorted(missing_sections),
+
+        "summary": {
+            "total_sections": len(SECTION_PATTERNS),
+            "found": len(found_sections),
+            "missing": len(missing_sections),
+            "completion_percentage": round(
+                (len(found_sections) / len(SECTION_PATTERNS)) * 100
+            )
+        }
 
     }

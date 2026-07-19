@@ -7,6 +7,7 @@ from app.services.skill_extractor import extract_skills
 from app.services.ats_scorer import calculate_ats_score
 from app.services.section_analyzer import analyze_resume_sections
 from app.services.recommendation_engine import generate_recommendations
+from app.services.response_builder import response_builder
 
 router = APIRouter()
 
@@ -23,7 +24,10 @@ def test_resume_route():
 async def upload_resume(file: UploadFile = File(...)):
 
     if file.content_type != "application/pdf":
-        return {"error": "Only PDF files are allowed"}
+        return {
+            "success": False,
+            "message": "Only PDF files are allowed"
+        }
 
     file_path = UPLOAD_DIR / file.filename
 
@@ -55,21 +59,17 @@ async def upload_resume(file: UploadFile = File(...)):
         ats_result["ats_score"]
     )
 
-    return {
-        "filename": file.filename,
-        "message": "Resume uploaded successfully",
+    response = response_builder.build(
+        extracted_text=extracted_text,
+        ats_score=ats_result["ats_score"],
+        skills=skills,
+        sections=section_result["sections"],
+        recommendations=recommendations
+    )
 
-        "extracted_text": extracted_text[:3000],
+    response["filename"] = file.filename
+    response["feedback"] = ats_result["feedback"]
+    response["preview_text"] = extracted_text[:3000]
+    response["section_summary"] = section_result["summary"]
 
-        "skills": skills,
-
-        "ats_score": ats_result["ats_score"],
-
-        "feedback": ats_result["feedback"],
-
-        "found_sections": section_result["found_sections"],
-
-        "missing_sections": section_result["missing_sections"],
-
-        "recommendations": recommendations
-    }
+    return response
