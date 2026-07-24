@@ -72,6 +72,10 @@ async def upload_resume(file: UploadFile = File(...)):
     response["filename"] = file.filename
     response["feedback"] = ats_result["feedback"]
     response["candidate_profile"] = ats_result["candidate_profile"]
+    response["analysis"]["candidate_profile"] = ats_result["candidate_profile"]
+    response["analysis"]["score_breakdown"] = ats_result["score_breakdown"]
+    response["analysis"]["raw_points"] = ats_result["raw_points"]
+    response["analysis"]["maximum_points"] = ats_result["maximum_points"]
     response["preview_text"] = extracted_text[:3000]
     response["section_summary"] = section_result["summary"]
 

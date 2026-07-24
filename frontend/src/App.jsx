@@ -12,6 +12,10 @@ import "./App.css";
 const emptyAnalysis = {
   ats_score: 0,
   resume_grade: "N/A",
+  candidate_profile: "",
+  score_breakdown: [],
+  raw_points: 0,
+  maximum_points: 0,
   statistics: {},
   skills: { items: [], categories: {} },
   sections: {},
@@ -164,7 +168,7 @@ function App() {
         {result && (
           <section aria-label="Resume analysis" style={styles.results}>
             <div style={styles.resultHeading}><div><p style={styles.eyebrow}>Your personalized report</p><h2 style={styles.resultsTitle}>Analysis for {result.filename}</h2></div><span style={styles.completeBadge}>Analysis complete</span></div>
-            <div style={styles.scoreGrid}><ATSScoreCard atsScore={analysis.ats_score} grade={analysis.resume_grade} statistics={analysis.statistics} feedback={result.feedback} /><ResumeGrade grade={analysis.resume_grade} atsScore={analysis.ats_score} /></div>
+            <div style={styles.scoreGrid}><ATSScoreCard atsScore={analysis.ats_score} grade={analysis.resume_grade} statistics={analysis.statistics} feedback={result.feedback} breakdown={analysis.score_breakdown} rawPoints={analysis.raw_points} maximumPoints={analysis.maximum_points} candidateProfile={analysis.candidate_profile} /><ResumeGrade grade={analysis.resume_grade} atsScore={analysis.ats_score} /></div>
             <ResumeStatistics statistics={analysis.statistics} />
             <SectionAnalysis sections={analysis.sections} summary={result.sectionSummary} />
             <SkillsSection skills={analysis.skills} />

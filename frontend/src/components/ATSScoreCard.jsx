@@ -4,7 +4,11 @@ function ATSScoreCard({
     atsScore = 0,
     grade = "N/A",
     statistics = {},
-    feedback = []
+    feedback = [],
+    breakdown = [],
+    rawPoints = 0,
+    maximumPoints = 0,
+    candidateProfile = ""
 }) {
 
     const radius = 70;
@@ -192,6 +196,28 @@ function ATSScoreCard({
                 </svg>
 
             </div>
+
+            {breakdown.length > 0 && (
+                <section style={{ marginBottom: "30px", textAlign: "left" }}>
+                    <h3 style={{ margin: "0 0 8px" }}>How this score is calculated</h3>
+                    {candidateProfile && <p style={{ color: "#a5b4fc", margin: "0 0 16px" }}>Profile: {candidateProfile}</p>}
+                    <div style={{ display: "grid", gap: "10px" }}>
+                        {breakdown.map((item) => (
+                            <div key={item.label} style={{ background: "#1f2937", border: "1px solid #374151", borderRadius: "10px", padding: "11px 12px" }}>
+                                <div style={{ display: "flex", justifyContent: "space-between", gap: "12px", fontSize: "14px" }}>
+                                    <span>{item.label}</span><strong>{item.points}/{item.maximum}</strong>
+                                </div>
+                                <div style={{ height: "5px", marginTop: "8px", borderRadius: "99px", background: "#374151", overflow: "hidden" }}>
+                                    <div style={{ height: "100%", width: `${item.maximum ? (item.points / item.maximum) * 100 : 0}%`, borderRadius: "inherit", background: scoreColor() }} />
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                    <p style={{ margin: "16px 0 0", color: "#9ca3af", fontSize: "13px", lineHeight: 1.5 }}>
+                        Raw calculation: {rawPoints}/{maximumPoints} points. Your displayed ATS score is this total normalized to 100.
+                    </p>
+                </section>
+            )}
 
             <div
 

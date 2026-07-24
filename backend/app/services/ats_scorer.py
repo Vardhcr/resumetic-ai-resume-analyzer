@@ -130,35 +130,36 @@ def calculate_ats_score(text: str, skills: list[str]):
     headings = _heading_lines(text)
     words = re.findall(r"\b[\w+#.-]+\b", text)
     word_count = len(words)
-    score = 0
     feedback = []
+    breakdown = []
     candidate_profile = detect_candidate_profile(text)
 
-    # 60 points: standard headings, detected only as headings, not prose.
+    # Standard headings, detected only as headings, not prose.
     for label, (weight, aliases) in SECTION_RULES.items():
         present = _has_section(headings, aliases)
-        if present:
-            score += weight
+        points = weight if present else 0
+        breakdown.append({"label": label, "points": points, "maximum": weight})
         feedback.append(_quality_feedback(label, present))
 
     # 5 points: practical project evidence is a valid substitute for formal
     # employment when evaluating internship and entry-level candidates.
     project_points, project_feedback = _project_portfolio_points(text)
-    score += project_points
+    breakdown.append({"label": "Project portfolio", "points": project_points, "maximum": 7})
     feedback.append(project_feedback)
 
     research_points, research_feedback = _academic_profile_points(text, candidate_profile)
-    score += research_points
+    if candidate_profile != "B.Tech/Fresher":
+        breakdown.append({"label": "Research profile", "points": research_points, "maximum": 10})
     feedback.append(research_feedback)
 
     achievement_points, achievement_feedback = _achievement_points(text)
-    score += achievement_points
+    breakdown.append({"label": "Professional achievements", "points": achievement_points, "maximum": 7})
     feedback.append(achievement_feedback)
 
     # 10 points: a useful, but not inflated, technical skill inventory.
     skill_count = len(set(skills))
     skill_points = 10 if skill_count >= 12 else 8 if skill_count >= 8 else 5 if skill_count >= 4 else 0
-    score += skill_points
+    breakdown.append({"label": "Technical skill coverage", "points": skill_points, "maximum": 10})
     if skill_points == 10:
         feedback.append("Strong technical skill coverage")
     elif skill_points:
@@ -170,7 +171,7 @@ def calculate_ats_score(text: str, skills: list[str]):
     action_verb_count = len(set(re.findall(r"\b[a-z]+\b", normalized_text)).intersection(ACTION_VERBS))
     metric_count = len(re.findall(r"(?:\b\d+(?:\.\d+)?\s*%|\b\d+[+x]|\$\s*\d+|\b\d+\s+(?:users|customers|hours|days|months|records|projects))", normalized_text))
     impact_points = min(action_verb_count, 4) + min(metric_count, 4)
-    score += impact_points
+    breakdown.append({"label": "Measurable impact", "points": impact_points, "maximum": 8})
     if impact_points < 5:
         feedback.append("Use action verbs and quantified outcomes in project and experience bullets")
     else:
@@ -181,20 +182,23 @@ def calculate_ats_score(text: str, skills: list[str]):
     has_github = "github.com" in normalized_text
     has_email = bool(re.search(r"\b[\w.+-]+@[\w-]+\.[\w.-]+\b", text))
     link_points = int(has_linkedin) + int(has_github) + int(has_email) + int(has_linkedin and has_github)
-    score += link_points
+    breakdown.append({"label": "Contact and professional links", "points": link_points, "maximum": 4})
     if link_points < 3:
         feedback.append("Include a professional email and relevant LinkedIn or GitHub links")
 
     # 10 points: reward concise, recruiter-friendly length; do not call it "one page"
     # because page count cannot be reliably inferred from extracted PDF text.
     if 300 <= word_count <= 900:
-        score += 10
+        length_points = 10
         feedback.append("Resume length is concise and recruiter friendly")
     elif 200 <= word_count < 300 or 900 < word_count <= 1200:
-        score += 6
+        length_points = 6
         feedback.append("Resume length is acceptable but could be tightened")
-    elif word_count:
-        feedback.append("Resume length needs attention; aim for focused, relevant content")
+    else:
+        length_points = 0
+        if word_count:
+            feedback.append("Resume length needs attention; aim for focused, relevant content")
+    breakdown.append({"label": "Resume length", "points": length_points, "maximum": 10})
 
     # 8 points: readability from a sufficient number of distinct heading lines.
     heading_count = len(headings.intersection({
@@ -203,16 +207,21 @@ def calculate_ats_score(text: str, skills: list[str]):
         for alias in aliases
     }))
     readability_points = 8 if heading_count >= 5 else 5 if heading_count >= 3 else 2 if heading_count else 0
-    score += readability_points
+    breakdown.append({"label": "ATS-readable headings", "points": readability_points, "maximum": 8})
     if readability_points < 8:
         feedback.append("Use clear, standalone section headings for reliable ATS parsing")
 
-    score = min(score, 100)
+    raw_points = sum(item["points"] for item in breakdown)
+    maximum_points = sum(item["maximum"] for item in breakdown)
+    score = round((raw_points / maximum_points) * 100) if maximum_points else 0
     strength = "Excellent" if score >= 90 else "Very Good" if score >= 80 else "Good" if score >= 70 else "Average" if score >= 60 else "Needs Improvement"
 
     return {
         "ats_score": score,
         "resume_strength": strength,
         "candidate_profile": candidate_profile,
+        "score_breakdown": breakdown,
+        "raw_points": raw_points,
+        "maximum_points": maximum_points,
         "feedback": feedback,
     }
