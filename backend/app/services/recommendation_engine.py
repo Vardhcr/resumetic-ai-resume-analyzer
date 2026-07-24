@@ -6,7 +6,8 @@ def generate_recommendations(
     found_sections,
     missing_sections,
     skills,
-    ats_score
+    ats_score,
+    candidate_profile="B.Tech/Fresher",
 ):
 
     recommendations = []
@@ -27,7 +28,7 @@ def generate_recommendations(
             "Include internships, freelance work, research projects, or significant personal projects in an Experience section."
         )
 
-    if "Publications" in missing_sections:
+    if candidate_profile in {"M.Tech/MS", "PhD"} and "Publications" in missing_sections:
         recommendations.append(
             "If you have written research papers, blogs, or technical articles, include a Publications section."
         )

@@ -48,7 +48,8 @@ async def upload_resume(file: UploadFile = File(...)):
 
     # Resume Sections
     section_result = analyze_resume_sections(
-        extracted_text
+        extracted_text,
+        ats_result["candidate_profile"]
     )
 
     # Recommendations
@@ -56,7 +57,8 @@ async def upload_resume(file: UploadFile = File(...)):
         section_result["found_sections"],
         section_result["missing_sections"],
         skills,
-        ats_result["ats_score"]
+        ats_result["ats_score"],
+        ats_result["candidate_profile"]
     )
 
     response = response_builder.build(
@@ -69,6 +71,7 @@ async def upload_resume(file: UploadFile = File(...)):
 
     response["filename"] = file.filename
     response["feedback"] = ats_result["feedback"]
+    response["candidate_profile"] = ats_result["candidate_profile"]
     response["preview_text"] = extracted_text[:3000]
     response["section_summary"] = section_result["summary"]
 

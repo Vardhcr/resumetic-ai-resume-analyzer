@@ -66,6 +66,18 @@ SECTION_PATTERNS = {
         "extra curricular activities"
     ],
 
+}
+
+RESEARCH_SECTION_PATTERNS = {
+    "Thesis": [
+        "thesis",
+        "dissertation"
+    ],
+    "Research Experience": [
+        "research experience",
+        "research assistant",
+        "research internships"
+    ],
     "Publications": [
         "publications",
         "research papers",
@@ -81,7 +93,7 @@ SECTION_PATTERNS = {
 # ANALYZE RESUME SECTIONS
 # ==========================================
 
-def analyze_resume_sections(text: str):
+def analyze_resume_sections(text: str, candidate_profile: str = "B.Tech/Fresher"):
 
     text = text.lower()
 
@@ -89,7 +101,11 @@ def analyze_resume_sections(text: str):
     missing_sections = []
     sections = {}
 
-    for section, aliases in SECTION_PATTERNS.items():
+    patterns = SECTION_PATTERNS.copy()
+    if candidate_profile in {"M.Tech/MS", "PhD"}:
+        patterns.update(RESEARCH_SECTION_PATTERNS)
+
+    for section, aliases in patterns.items():
 
         found = False
 
@@ -117,11 +133,11 @@ def analyze_resume_sections(text: str):
         "missing_sections": sorted(missing_sections),
 
         "summary": {
-            "total_sections": len(SECTION_PATTERNS),
+            "total_sections": len(patterns),
             "found": len(found_sections),
             "missing": len(missing_sections),
             "completion_percentage": round(
-                (len(found_sections) / len(SECTION_PATTERNS)) * 100
+                (len(found_sections) / len(patterns)) * 100
             )
         }
 

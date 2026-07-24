@@ -53,6 +53,16 @@ def _quality_feedback(label: str, present: bool) -> str:
     return f"{label} section found" if present else f"Consider adding a clear {label} section"
 
 
+def detect_candidate_profile(text: str) -> str:
+    """Identify the academic context so optional sections are judged fairly."""
+    normalized = (text or "").lower()
+    if re.search(r"\b(?:ph\.?d\.?|doctorate|doctoral)\b", normalized):
+        return "PhD"
+    if re.search(r"\b(?:m\.?tech\.?|m\.?s\.?|m\.sc\.?|master(?:'s| of)?)\b", normalized):
+        return "M.Tech/MS"
+    return "B.Tech/Fresher"
+
+
 def _project_portfolio_points(text: str) -> tuple[int, str]:
     """Reward proof of software work, which is especially valuable to interns."""
     normalized = text.lower()
@@ -63,18 +73,55 @@ def _project_portfolio_points(text: str) -> tuple[int, str]:
     )
     repository_links = re.findall(r"github\.com/[\w.-]+/[\w.-]+", normalized)
     current_work = bool(re.search(r"\b(?:current project|currently building|ongoing project|in progress)\b", normalized))
+    major_project = bool(re.search(r"\b(?:final[ -]year|capstone|major project|thesis project)\b", normalized))
 
     # One point per distinct live/deployed signal or repository, capped to avoid
     # turning a long URL list into an inflated score. Current work earns one
     # additional point because it demonstrates active practical experience.
     evidence_count = len(set(live_markers)) + len(set(repository_links))
-    points = min(evidence_count, 4) + int(current_work)
+    points = min(evidence_count, 4) + int(current_work) + (2 if major_project else 0)
+    points = min(points, 7)
 
     if points >= 4:
         return points, "Strong project portfolio with live, deployed, or repository evidence"
     if points:
         return points, "Add live demo links, deployed URLs, or GitHub repositories to strengthen project evidence"
     return 0, "Add live projects, deployed links, or GitHub repositories to demonstrate practical software experience"
+
+
+def _academic_profile_points(text: str, profile: str) -> tuple[int, str]:
+    """Score research evidence only when it is appropriate to the profile."""
+    if profile == "B.Tech/Fresher":
+        return 0, "B.Tech/Fresher profile: project portfolio is weighted above publications and research"
+
+    normalized = text.lower()
+    thesis = bool(re.search(r"\b(?:thesis|dissertation)\b", normalized))
+    publication_count = len(re.findall(r"\b(?:publication|journal paper|conference paper|research paper)\b", normalized))
+    research_experience = bool(re.search(r"\b(?:research experience|research assistant|research intern|researcher|laboratory)\b", normalized))
+
+    if profile == "PhD":
+        points = (2 if thesis else 0) + min(publication_count, 5) + (3 if research_experience else 0)
+    else:  # M.Tech/MS
+        points = (3 if thesis else 0) + min(publication_count, 3) + (4 if research_experience else 0)
+
+    if points:
+        return points, f"{profile} research profile: thesis, publications, and research experience recognised"
+    return 0, f"{profile} profile: add relevant thesis, publications, or research experience if available"
+
+
+def _achievement_points(text: str) -> tuple[int, str]:
+    """Reward meaningful professional distinctions, with a strict 10-point cap."""
+    normalized = text.lower()
+    points = 0
+    points += 3 if re.search(r"\b(?:hackathon winner|won .*hackathon|hackathon champion)\b", normalized) else 0
+    points += 2 if re.search(r"\b(?:aws|azure|google cloud|gcp).{0,40}\bcertif", normalized) else 0
+    points += 4 if re.search(r"\b(?:national (?:level )?(?:competition|contest)|research award)\b", normalized) else 0
+    points += 3 if re.search(r"\b(?:open[ -]source contributor|contributed to open source|kaggle (?:medal|expert|master))\b", normalized) else 0
+    points = min(points, 7)  # + 3 points for the Achievements heading = max 10.
+
+    if points:
+        return points, "Professional achievements and certifications strengthen the profile"
+    return 0, "Add relevant certifications, hackathons, open-source work, or competition achievements"
 
 
 def calculate_ats_score(text: str, skills: list[str]):
@@ -86,6 +133,7 @@ def calculate_ats_score(text: str, skills: list[str]):
     word_count = len(words)
     score = 0
     feedback = []
+    candidate_profile = detect_candidate_profile(text)
 
     # 60 points: standard headings, detected only as headings, not prose.
     for label, (weight, aliases) in SECTION_RULES.items():
@@ -99,6 +147,14 @@ def calculate_ats_score(text: str, skills: list[str]):
     project_points, project_feedback = _project_portfolio_points(text)
     score += project_points
     feedback.append(project_feedback)
+
+    research_points, research_feedback = _academic_profile_points(text, candidate_profile)
+    score += research_points
+    feedback.append(research_feedback)
+
+    achievement_points, achievement_feedback = _achievement_points(text)
+    score += achievement_points
+    feedback.append(achievement_feedback)
 
     # 10 points: a useful, but not inflated, technical skill inventory.
     skill_count = len(set(skills))
@@ -155,4 +211,9 @@ def calculate_ats_score(text: str, skills: list[str]):
     score = min(score, 100)
     strength = "Excellent" if score >= 90 else "Very Good" if score >= 80 else "Good" if score >= 70 else "Average" if score >= 60 else "Needs Improvement"
 
-    return {"ats_score": score, "resume_strength": strength, "feedback": feedback}
+    return {
+        "ats_score": score,
+        "resume_strength": strength,
+        "candidate_profile": candidate_profile,
+        "feedback": feedback,
+    }

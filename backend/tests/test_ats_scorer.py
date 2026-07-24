@@ -51,6 +51,17 @@ class AtsScorerTests(unittest.TestCase):
         self.assertGreater(portfolio["ats_score"], base["ats_score"])
         self.assertIn("Strong project portfolio with live, deployed, or repository evidence", portfolio["feedback"])
 
+    def test_postgraduate_research_is_scored_but_not_required_for_freshers(self):
+        fresher = calculate_ats_score("Education\nB.Tech in Computer Science", [])
+        postgrad = calculate_ats_score(
+            "Education\nM.Tech in Computer Science\nThesis\nResearch assistant\nPublications\nConference paper",
+            [],
+        )
+
+        self.assertEqual(fresher["candidate_profile"], "B.Tech/Fresher")
+        self.assertEqual(postgrad["candidate_profile"], "M.Tech/MS")
+        self.assertGreater(postgrad["ats_score"], fresher["ats_score"])
+
 
 if __name__ == "__main__":
     unittest.main()
