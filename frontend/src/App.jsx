@@ -1,7 +1,6 @@
 import { useRef, useState } from "react";
 
 import ATSScoreCard from "./components/ATSScoreCard";
-import ResumeGrade from "./components/ResumeGrade";
 import ResumeStatistics from "./components/ResumeStatistics";
 import SectionAnalysis from "./components/SectionAnalysis";
 import SkillsSection from "./components/SkillSection";
@@ -168,7 +167,7 @@ function App() {
         {result && (
           <section aria-label="Resume analysis" style={styles.results}>
             <div style={styles.resultHeading}><div><p style={styles.eyebrow}>Your personalized report</p><h2 style={styles.resultsTitle}>Analysis for {result.filename}</h2></div><span style={styles.completeBadge}>Analysis complete</span></div>
-            <div style={styles.scoreGrid}><ATSScoreCard atsScore={analysis.ats_score} grade={analysis.resume_grade} statistics={analysis.statistics} feedback={result.feedback} breakdown={analysis.score_breakdown} rawPoints={analysis.raw_points} maximumPoints={analysis.maximum_points} candidateProfile={analysis.candidate_profile} /><ResumeGrade grade={analysis.resume_grade} atsScore={analysis.ats_score} /></div>
+            <div style={styles.scoreGrid}><ATSScoreCard atsScore={analysis.ats_score} grade={analysis.resume_grade} statistics={analysis.statistics} feedback={result.feedback} breakdown={analysis.score_breakdown} rawPoints={analysis.raw_points} maximumPoints={analysis.maximum_points} candidateProfile={analysis.candidate_profile} /></div>
             <ResumeStatistics statistics={analysis.statistics} />
             <SectionAnalysis sections={analysis.sections} summary={result.sectionSummary} />
             <SkillsSection skills={analysis.skills} />
