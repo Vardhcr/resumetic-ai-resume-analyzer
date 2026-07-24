@@ -1,6 +1,7 @@
 import unittest
 
 from app.services.ats_scorer import calculate_ats_score
+from app.services.section_analyzer import analyze_resume_sections
 
 
 class AtsScorerTests(unittest.TestCase):
@@ -61,6 +62,11 @@ class AtsScorerTests(unittest.TestCase):
         self.assertEqual(fresher["candidate_profile"], "B.Tech/Fresher")
         self.assertEqual(postgrad["candidate_profile"], "M.Tech/MS")
         self.assertGreater(postgrad["ats_score"], fresher["ats_score"])
+
+    def test_publications_are_not_an_expected_section(self):
+        sections = analyze_resume_sections("Education\nM.Tech", "M.Tech/MS")
+
+        self.assertNotIn("Publications", sections["sections"])
 
 
 if __name__ == "__main__":

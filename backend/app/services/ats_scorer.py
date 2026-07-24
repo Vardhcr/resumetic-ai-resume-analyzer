@@ -96,17 +96,16 @@ def _academic_profile_points(text: str, profile: str) -> tuple[int, str]:
 
     normalized = text.lower()
     thesis = bool(re.search(r"\b(?:thesis|dissertation)\b", normalized))
-    publication_count = len(re.findall(r"\b(?:publication|journal paper|conference paper|research paper)\b", normalized))
     research_experience = bool(re.search(r"\b(?:research experience|research assistant|research intern|researcher|laboratory)\b", normalized))
 
     if profile == "PhD":
-        points = (2 if thesis else 0) + min(publication_count, 5) + (3 if research_experience else 0)
+        points = (4 if thesis else 0) + (6 if research_experience else 0)
     else:  # M.Tech/MS
-        points = (3 if thesis else 0) + min(publication_count, 3) + (4 if research_experience else 0)
+        points = (5 if thesis else 0) + (5 if research_experience else 0)
 
     if points:
-        return points, f"{profile} research profile: thesis, publications, and research experience recognised"
-    return 0, f"{profile} profile: add relevant thesis, publications, or research experience if available"
+        return points, f"{profile} research profile: thesis and research experience recognised"
+    return 0, f"{profile} profile: add relevant thesis or research experience if available"
 
 
 def _achievement_points(text: str) -> tuple[int, str]:

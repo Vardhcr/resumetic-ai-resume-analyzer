@@ -77,13 +77,6 @@ RESEARCH_SECTION_PATTERNS = {
         "research experience",
         "research assistant",
         "research internships"
-    ],
-    "Publications": [
-        "publications",
-        "research papers",
-        "journal publications",
-        "conference papers",
-        "technical papers"
     ]
 
 }
