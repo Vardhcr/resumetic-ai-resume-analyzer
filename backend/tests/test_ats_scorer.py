@@ -37,6 +37,20 @@ class AtsScorerTests(unittest.TestCase):
 
         self.assertGreaterEqual(result["ats_score"], 80)
 
+    def test_live_projects_and_current_work_improve_entry_level_score(self):
+        base_text = """Projects
+        Inventory dashboard built with React and FastAPI."""
+        portfolio_text = """Projects
+        Inventory dashboard — github.com/jane/inventory-dashboard
+        Deployed live demo: https://inventory-dashboard.netlify.app
+        Currently building an analytics extension as an ongoing project."""
+
+        base = calculate_ats_score(base_text, [])
+        portfolio = calculate_ats_score(portfolio_text, [])
+
+        self.assertGreater(portfolio["ats_score"], base["ats_score"])
+        self.assertIn("Strong project portfolio with live, deployed, or repository evidence", portfolio["feedback"])
+
 
 if __name__ == "__main__":
     unittest.main()

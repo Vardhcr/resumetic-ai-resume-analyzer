@@ -12,7 +12,9 @@ from collections.abc import Iterable
 SECTION_RULES = {
     "Education": (10, ("education", "academic background", "academic qualifications", "qualifications")),
     "Skills": (13, ("skills", "technical skills", "core skills", "technical expertise", "competencies")),
-    "Projects": (13, ("projects", "academic projects", "personal projects", "selected projects")),
+    # A project heading earns the base points. The remaining project points are
+    # earned below through evidence of active, deployed, or live work.
+    "Projects": (8, ("projects", "academic projects", "personal projects", "selected projects")),
     "Experience": (14, ("experience", "work experience", "professional experience", "work history", "employment history", "internships")),
     "Certifications": (4, ("certifications", "licenses", "training")),
     "Achievements": (3, ("achievements", "awards", "honors", "accomplishments")),
@@ -51,6 +53,30 @@ def _quality_feedback(label: str, present: bool) -> str:
     return f"{label} section found" if present else f"Consider adding a clear {label} section"
 
 
+def _project_portfolio_points(text: str) -> tuple[int, str]:
+    """Reward proof of software work, which is especially valuable to interns."""
+    normalized = text.lower()
+    live_markers = re.findall(
+        r"\b(?:live demo|live project|deployed|in production|production app|hosted on|"
+        r"netlify\.app|vercel\.app|render\.com|railway\.app)\b",
+        normalized,
+    )
+    repository_links = re.findall(r"github\.com/[\w.-]+/[\w.-]+", normalized)
+    current_work = bool(re.search(r"\b(?:current project|currently building|ongoing project|in progress)\b", normalized))
+
+    # One point per distinct live/deployed signal or repository, capped to avoid
+    # turning a long URL list into an inflated score. Current work earns one
+    # additional point because it demonstrates active practical experience.
+    evidence_count = len(set(live_markers)) + len(set(repository_links))
+    points = min(evidence_count, 4) + int(current_work)
+
+    if points >= 4:
+        return points, "Strong project portfolio with live, deployed, or repository evidence"
+    if points:
+        return points, "Add live demo links, deployed URLs, or GitHub repositories to strengthen project evidence"
+    return 0, "Add live projects, deployed links, or GitHub repositories to demonstrate practical software experience"
+
+
 def calculate_ats_score(text: str, skills: list[str]):
     """Calculate a 0–100 ATS-readiness score from extracted resume text."""
     text = text or ""
@@ -67,6 +93,12 @@ def calculate_ats_score(text: str, skills: list[str]):
         if present:
             score += weight
         feedback.append(_quality_feedback(label, present))
+
+    # 5 points: practical project evidence is a valid substitute for formal
+    # employment when evaluating internship and entry-level candidates.
+    project_points, project_feedback = _project_portfolio_points(text)
+    score += project_points
+    feedback.append(project_feedback)
 
     # 10 points: a useful, but not inflated, technical skill inventory.
     skill_count = len(set(skills))

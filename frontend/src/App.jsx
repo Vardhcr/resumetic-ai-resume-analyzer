@@ -86,7 +86,7 @@ function App() {
       setError(
         serverMessage ||
           (isNetworkError
-            ? "Unable to reach the resume analyzer. Please make sure the FastAPI server is running on http://127.0.0.1:8000."
+            ? "Unable to reach the resume analyzer. Please check your connection and try again in a moment."
             : "Upload failed. Please try again.")
       );
     } finally {

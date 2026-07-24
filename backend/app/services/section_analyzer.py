@@ -66,13 +66,6 @@ SECTION_PATTERNS = {
         "extra curricular activities"
     ],
 
-    "Volunteer Work": [
-        "volunteer",
-        "volunteer work",
-        "community service",
-        "social work"
-    ],
-
     "Publications": [
         "publications",
         "research papers",

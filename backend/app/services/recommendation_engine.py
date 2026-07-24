@@ -27,11 +27,6 @@ def generate_recommendations(
             "Include internships, freelance work, research projects, or significant personal projects in an Experience section."
         )
 
-    if "Volunteer Work" in missing_sections:
-        recommendations.append(
-            "Volunteer work or leadership experience strengthens your resume and demonstrates teamwork."
-        )
-
     if "Publications" in missing_sections:
         recommendations.append(
             "If you have written research papers, blogs, or technical articles, include a Publications section."
