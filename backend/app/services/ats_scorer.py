@@ -5,20 +5,15 @@ be hired.  It deliberately rewards real resume structure and useful content,
 rather than awarding points because a section name appears in body text.
 """
 
+from email.mime import text
 import re
 from collections.abc import Iterable
-
 
 SECTION_RULES = {
     "Education": (10, ("education", "academic background", "academic qualifications", "qualifications")),
     "Skills": (13, ("skills", "technical skills", "core skills", "technical expertise", "competencies")),
-    # A project heading earns the base points. The remaining project points are
-    # earned below through evidence of active, deployed, or live work.
     "Projects": (8, ("projects", "academic projects", "personal projects", "selected projects")),
-    "Experience": (14, ("experience", "work experience", "professional experience", "work history", "employment history", "internships")),
     "Certifications": (4, ("certifications", "licenses", "training")),
-    "Achievements": (3, ("achievements", "awards", "honors", "accomplishments")),
-    "Career Objective": (3, ("career objective", "professional summary", "summary", "profile")),
 }
 
 ACTION_VERBS = {
@@ -107,22 +102,38 @@ def _academic_profile_points(text: str, profile: str) -> tuple[int, str]:
         return points, f"{profile} research profile: thesis and research experience recognised"
     return 0, f"{profile} profile: add relevant thesis or research experience if available"
 
-
 def _achievement_points(text: str) -> tuple[int, str]:
-    """Reward meaningful professional distinctions, with a strict 10-point cap."""
+    """
+    Reward professional achievements.
+    Missing achievements should never reduce ATS compatibility.
+    """
+
     normalized = text.lower()
     points = 0
-    points += 3 if re.search(r"\b(?:hackathon winner|won .*hackathon|hackathon champion)\b", normalized) else 0
-    points += 2 if re.search(r"\b(?:aws|azure|google cloud|gcp).{0,40}\bcertif", normalized) else 0
-    points += 4 if re.search(r"\b(?:national (?:level )?(?:competition|contest)|research award)\b", normalized) else 0
-    points += 3 if re.search(r"\b(?:open[ -]source contributor|contributed to open source|kaggle (?:medal|expert|master))\b", normalized) else 0
-    points = min(points, 7)  # + 3 points for the Achievements heading = max 10.
+
+    if re.search(r"\b(?:hackathon winner|won .*hackathon|hackathon champion|first place|second place|third place)\b", normalized):
+        points += 3
+
+    if re.search(r"\b(?:aws|azure|google cloud|gcp|oracle|cisco|ibm|meta).{0,40}\bcertif", normalized):
+        points += 2
+
+    if re.search(r"\b(?:national (?:level )?(?:competition|contest)|research award)\b", normalized):
+        points += 3
+
+    if re.search(r"\b(?:open[ -]source contributor|contributed to open source|kaggle (?:medal|expert|master))\b", normalized):
+        points += 2
+
+    if re.search(r"\b(?:president|vice president|chairperson|lead|captain|rotaract|ieee|gdsc|technical lead)\b", normalized):
+        points += 2
+
+    points = min(points, 10)
 
     if points:
-        return points, "Professional achievements and certifications strengthen the profile"
-    return 0, "Add relevant certifications, hackathons, open-source work, or competition achievements"
+        return points, "Professional achievements strengthen your profile."
 
+    return 0, "No professional achievements detected."
 
+    
 def calculate_ats_score(text: str, skills: list[str]):
     """Calculate a 0–100 ATS-readiness score from extracted resume text."""
     text = text or ""
@@ -153,7 +164,13 @@ def calculate_ats_score(text: str, skills: list[str]):
     feedback.append(research_feedback)
 
     achievement_points, achievement_feedback = _achievement_points(text)
-    breakdown.append({"label": "Professional achievements", "points": achievement_points, "maximum": 7})
+
+    breakdown.append({
+    "label": "Profile Highlights",
+    "points": achievement_points,
+    "maximum": 10,
+})
+
     feedback.append(achievement_feedback)
 
     # 10 points: a useful, but not inflated, technical skill inventory.
