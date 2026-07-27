@@ -133,6 +133,26 @@ def _achievement_points(text: str) -> tuple[int, str]:
 
     return 0, "No professional achievements detected."
 
+    CATEGORY_WEIGHTS = {
+        "Education": 10,
+        "Skills": 10,
+        "Projects": 15,
+        "Certifications": 10,
+
+        "Project portfolio": 10,
+        "Technical skill coverage": 10,
+
+        "Measurable impact": 15,
+
+        "Contact and professional links": 5,
+
+        "Resume length": 10,
+        "ATS-readable headings": 5,
+
+        "Profile Highlights": 10,
+
+        "Research profile": 10,
+    }   
     
 def calculate_ats_score(text: str, skills: list[str]):
     """Calculate a 0–100 ATS-readiness score from extracted resume text."""
@@ -227,12 +247,37 @@ def calculate_ats_score(text: str, skills: list[str]):
     breakdown.append({"label": "ATS-readable headings", "points": readability_points, "maximum": 8})
     if readability_points < 8:
         feedback.append("Use clear, standalone section headings for reliable ATS parsing")
+        weighted_score = 0
+        total_weight = 0
 
-    raw_points = sum(item["points"] for item in breakdown)
-    maximum_points = sum(item["maximum"] for item in breakdown)
-    score = round((raw_points / maximum_points) * 100) if maximum_points else 0
-    strength = "Excellent" if score >= 90 else "Very Good" if score >= 80 else "Good" if score >= 70 else "Average" if score >= 60 else "Needs Improvement"
+        for item in breakdown:
+            label = item["label"]
 
+            if label not in CATEGORY_WEIGHTS:
+                continue
+
+            weight = CATEGORY_WEIGHTS[label]
+
+            if item["maximum"] > 0:
+                weighted_score += (item["points"] / item["maximum"]) * weight
+                total_weight += weight
+
+        raw_points = round(weighted_score, 2)
+        maximum_points = total_weight
+        score = round((weighted_score / total_weight) * 100) if total_weight else 0
+
+        if score >= 95:
+            strength = "Outstanding"
+        elif score >= 90:
+            strength = "Excellent"
+        elif score >= 80:
+            strength = "Very Good"
+        elif score >= 70:
+            strength = "Good"
+        elif score >= 60:
+            strength = "Fair"
+        else:
+            strength = "Needs Improvement"
     return {
         "ats_score": score,
         "resume_strength": strength,
