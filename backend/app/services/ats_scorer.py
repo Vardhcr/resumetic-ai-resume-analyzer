@@ -22,6 +22,27 @@ ACTION_VERBS = {
     "led", "managed", "optimized", "reduced", "streamlined",
 }
 
+CATEGORY_WEIGHTS = {
+    "Education": 10,
+    "Skills": 10,
+    "Projects": 15,
+    "Certifications": 10,
+
+    "Project portfolio": 10,
+    "Technical skill coverage": 10,
+
+    "Measurable impact": 15,
+
+    "Contact and professional links": 5,
+
+    "Resume length": 10,
+    "ATS-readable headings": 5,
+
+    "Profile Highlights": 10,
+
+    "Research profile": 10,
+}
+
 
 def _normalise_heading(value: str) -> str:
     """Return a comparison-friendly version of a possible section heading."""
