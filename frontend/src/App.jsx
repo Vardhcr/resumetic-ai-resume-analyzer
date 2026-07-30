@@ -95,16 +95,18 @@ function App() {
       });
       setMessage(data.message || "Resume analyzed successfully.");
     }  catch (err) {
-  const details = {
-    message: err.message,
-    code: err.code,
-    status: err.response?.status,
-    url: err.config?.url,
-    baseURL: err.config?.baseURL,
-  };
+  console.error("Axios Error:", err);
 
-  setError(JSON.stringify(details, null, 2));
-  console.error(err);
+  let msg = "";
+
+  if (err.code) msg += `Code: ${err.code}\n`;
+  if (err.message) msg += `Message: ${err.message}\n`;
+  if (err.response?.status) msg += `Status: ${err.response.status}\n`;
+  if (err.config?.baseURL) msg += `BaseURL: ${err.config.baseURL}\n`;
+
+  alert(msg);
+
+  setError(err.message || "Upload failed");
 } finally {
   setLoading(false);
 }}
