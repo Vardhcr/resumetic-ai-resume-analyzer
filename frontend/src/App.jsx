@@ -56,7 +56,7 @@ function App() {
 
     const formData = new FormData();
     formData.append("file", file);
-
+    console.log("API Base URL:", API.defaults.baseURL);
     try {
       const { data } = await API.post("/resume/upload", formData);
 
