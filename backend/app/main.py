@@ -3,26 +3,12 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.routes.resume import router as resume_router
 
-app = FastAPI()
+app = FastAPI(title="Resumetic API", version="2.0")
 
-origins = [
-    "https://resumetic.netlify.app",
-
-    "http://localhost:5173",
-    "http://localhost:5174",
-    "http://localhost:5175",
-    "http://localhost:5176",
-    "http://localhost:5177",
-    "http://localhost:5178",
-    "http://localhost:5179",
-
-    "http://127.0.0.1:5173",
-    "http://127.0.0.1:5179",
-]
-
+# Allow all local network, production, and mobile origins for seamless cross-device communication
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -31,9 +17,9 @@ app.add_middleware(
 @app.get("/")
 def home():
     return {
-        "message": "Backend is running successfully"
+        "status": "online",
+        "message": "Resumetic AI Resume Analyzer Backend is running successfully"
     }
-
 
 app.include_router(
     resume_router,

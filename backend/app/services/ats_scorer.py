@@ -268,37 +268,39 @@ def calculate_ats_score(text: str, skills: list[str]):
     breakdown.append({"label": "ATS-readable headings", "points": readability_points, "maximum": 8})
     if readability_points < 8:
         feedback.append("Use clear, standalone section headings for reliable ATS parsing")
-        weighted_score = 0
-        total_weight = 0
 
-        for item in breakdown:
-            label = item["label"]
+    weighted_score = 0
+    total_weight = 0
 
-            if label not in CATEGORY_WEIGHTS:
-                continue
+    for item in breakdown:
+        label = item["label"]
 
-            weight = CATEGORY_WEIGHTS[label]
+        if label not in CATEGORY_WEIGHTS:
+            continue
 
-            if item["maximum"] > 0:
-                weighted_score += (item["points"] / item["maximum"]) * weight
-                total_weight += weight
+        weight = CATEGORY_WEIGHTS[label]
 
-        raw_points = round(weighted_score, 2)
-        maximum_points = total_weight
-        score = round((weighted_score / total_weight) * 100) if total_weight else 0
+        if item["maximum"] > 0:
+            weighted_score += (item["points"] / item["maximum"]) * weight
+            total_weight += weight
 
-        if score >= 95:
-            strength = "Outstanding"
-        elif score >= 90:
-            strength = "Excellent"
-        elif score >= 80:
-            strength = "Very Good"
-        elif score >= 70:
-            strength = "Good"
-        elif score >= 60:
-            strength = "Fair"
-        else:
-            strength = "Needs Improvement"
+    raw_points = round(weighted_score, 2)
+    maximum_points = total_weight
+    score = round((weighted_score / total_weight) * 100) if total_weight else 0
+
+    if score >= 95:
+        strength = "Outstanding"
+    elif score >= 90:
+        strength = "Excellent"
+    elif score >= 80:
+        strength = "Very Good"
+    elif score >= 70:
+        strength = "Good"
+    elif score >= 60:
+        strength = "Fair"
+    else:
+        strength = "Needs Improvement"
+
     return {
         "ats_score": score,
         "resume_strength": strength,
@@ -308,3 +310,4 @@ def calculate_ats_score(text: str, skills: list[str]):
         "maximum_points": maximum_points,
         "feedback": feedback,
     }
+
