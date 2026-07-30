@@ -85,15 +85,23 @@ function App() {
       });
       setMessage(data.message || "Resume analyzed successfully.");
     } catch (uploadError) {
-      const serverMessage = uploadError.response?.data?.detail || uploadError.response?.data?.message;
-      const isNetworkError = !uploadError.response;
-      setError(
-        serverMessage ||
-          (isNetworkError
-            ? "Unable to reach the backend analyzer. Please check connection."
-            : "Upload failed. Please try again.")
-      );
-    } finally {
+  console.error("========== FULL ERROR ==========");
+  console.error(uploadError);
+
+  console.error("Response:");
+  console.error(uploadError.response);
+
+  console.error("Data:");
+  console.error(uploadError.response?.data);
+
+  console.error("Message:");
+  console.error(uploadError.message);
+
+  console.error("Stack:");
+  console.error(uploadError.stack);
+
+  setError(uploadError.message);
+} finally {
       setLoading(false);
     }
   };
