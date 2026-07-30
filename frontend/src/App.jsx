@@ -94,26 +94,20 @@ function App() {
         },
       });
       setMessage(data.message || "Resume analyzed successfully.");
-    }  catch (uploadError) {
-  alert(
-    JSON.stringify(
-      {
-        message: uploadError.message,
-        code: uploadError.code,
-        status: uploadError.response?.status,
-        data: uploadError.response?.data,
-      },
-      null,
-      2
-    )
-  );
-
-  console.error(uploadError);
-  setError(uploadError.message || "Upload failed");
-} finally {
-      setLoading(false);
-    }
+    }  catch (err) {
+  const details = {
+    message: err.message,
+    code: err.code,
+    status: err.response?.status,
+    url: err.config?.url,
+    baseURL: err.config?.baseURL,
   };
+
+  setError(JSON.stringify(details, null, 2));
+  console.error(err);
+} finally {
+  setLoading(false);
+}}
 
   const handleFileChange = (event) => {
     const file = event.target.files?.[0];
