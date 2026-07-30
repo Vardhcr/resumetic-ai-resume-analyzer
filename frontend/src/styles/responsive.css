@@ -1,0 +1,197 @@
+/* Mobile First Responsive Styles & Breakpoints */
+
+/* Desktop Screens (> 1024px) */
+@media (min-width: 1025px) {
+  .hero-art {
+    display: grid;
+  }
+}
+
+/* Tablets and Laptops (768px - 1024px) */
+@media (max-width: 1024px) {
+  .hero {
+    gap: 32px;
+  }
+  
+  .feature-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+
+  .nav-links-desktop {
+    gap: 16px;
+  }
+}
+
+/* Mobile Devices & Small Tablets (< 768px) */
+@media (max-width: 768px) {
+  .page-container {
+    padding: 16px 12px 90px;
+  }
+
+  .navbar {
+    padding: 8px 0 24px;
+  }
+
+  .nav-links-desktop {
+    display: none;
+  }
+
+  .mobile-menu-btn {
+    display: inline-flex;
+  }
+
+  .hero {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    padding: 0 0 24px;
+    text-align: center;
+  }
+
+  .eyebrow {
+    justify-content: center;
+  }
+
+  .title {
+    margin: 0 auto;
+  }
+
+  .subtitle {
+    margin: 16px auto;
+  }
+
+  .trust-row {
+    justify-content: center;
+    gap: 12px;
+    font-size: 0.82rem;
+  }
+
+  .hero-art {
+    min-height: 220px;
+  }
+
+  .resume-card-art {
+    width: min(280px, 90%);
+    padding: 16px;
+    transform: rotate(0deg);
+  }
+
+  .upload-panel {
+    flex-direction: column;
+    text-align: center;
+    padding: 20px 16px;
+    gap: 14px;
+  }
+
+  .upload-icon {
+    width: 44px;
+    height: 44px;
+  }
+
+  .upload-btn {
+    width: 100%;
+    min-height: 48px;
+  }
+
+  .feature-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .score-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .results-heading {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .complete-badge {
+    align-self: flex-start;
+  }
+
+  .stats-cards-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .stat-card {
+    padding: 14px;
+  }
+
+  .stat-card-icon {
+    font-size: 1.5rem;
+  }
+
+  .stat-card-value {
+    font-size: 1.6rem;
+    margin: 10px 0 4px;
+  }
+
+  .mobile-sticky-upload {
+    display: block;
+  }
+}
+
+/* Small Smartphone Displays (< 480px) */
+@media (max-width: 480px) {
+  .page-container {
+    padding: 12px 10px 100px;
+  }
+
+  .card-container,
+  .recommendation-panel,
+  .preview-panel {
+    padding: 16px 12px;
+    border-radius: var(--radius-md);
+  }
+
+  .gauge-svg {
+    max-width: 140px;
+    max-height: 140px;
+  }
+
+  .stats-grid-compact {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .stat-box-compact {
+    padding: 10px 6px;
+  }
+
+  .stat-number {
+    font-size: 1.15rem;
+  }
+
+  .stat-label {
+    font-size: 0.72rem;
+  }
+
+  .skill-tag {
+    padding: 5px 10px;
+    font-size: 0.78rem;
+  }
+
+  .recommendations-list {
+    padding-left: 16px;
+    font-size: 0.88rem;
+  }
+}
+
+/* Extra Small Displays (320px - 375px) */
+@media (max-width: 375px) {
+  .title {
+    font-size: 1.65rem;
+  }
+
+  .stats-cards-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .upload-title {
+    font-size: 1.1rem;
+  }
+}

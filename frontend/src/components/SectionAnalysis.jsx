@@ -1,10 +1,7 @@
-
-
 function SectionAnalysis({
   sections = {},
   summary = {}
 }) {
-
   const foundSections = Object.entries(sections)
     .filter(([, value]) => value)
     .map(([key]) => key);
@@ -13,239 +10,61 @@ function SectionAnalysis({
     .filter(([, value]) => !value)
     .map(([key]) => key);
 
-
   return (
-    <div
-      style={{
-        background: "#111827",
-        border: "1px solid #2d3748",
-        borderRadius: "20px",
-        padding: "30px",
-        boxShadow: "0 12px 25px rgba(0,0,0,.35)"
-      }}
-    >
-      <h2
-        style={{
-          color: "#ffffff",
-          textAlign: "center",
-          marginBottom: "30px"
-        }}
-      >
+    <div className="card-container">
+      <h2 style={{ color: "#ffffff", textAlign: "center", marginBottom: "20px", fontSize: "1.45rem" }}>
         Resume Section Analysis
       </h2>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))",
-          gap: "20px",
-          marginBottom: "35px"
-        }}
-      >
-        <div
-          style={{
-            background: "#1f2937",
-            padding: "20px",
-            borderRadius: "16px",
-            textAlign: "center"
-          }}
-        >
-          <h1
-            style={{
-              color: "#22c55e",
-              marginBottom: "10px"
-            }}
-          >
-            {summary.found || foundSections.length}
-          </h1>
-
-          <p
-            style={{
-              color: "#d1d5db"
-            }}
-          >
-            Sections Found
-          </p>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: "14px", marginBottom: "24px" }}>
+        <div style={{ background: "#1f2937", padding: "16px 12px", borderRadius: "14px", textAlign: "center" }}>
+          <h2 style={{ color: "#22c55e", margin: "0 0 4px", fontSize: "1.8rem" }}>{summary.found || foundSections.length}</h2>
+          <p style={{ color: "#d1d5db", margin: 0, fontSize: "0.85rem" }}>Sections Found</p>
         </div>
 
-        <div
-          style={{
-            background: "#1f2937",
-            padding: "20px",
-            borderRadius: "16px",
-            textAlign: "center"
-          }}
-        >
-          <h1
-            style={{
-              color: "#ef4444",
-              marginBottom: "10px"
-            }}
-          >
-            {summary.missing || missingSections.length}
-          </h1>
-
-          <p
-            style={{
-              color: "#d1d5db"
-            }}
-          >
-            Missing Sections
-          </p>
+        <div style={{ background: "#1f2937", padding: "16px 12px", borderRadius: "14px", textAlign: "center" }}>
+          <h2 style={{ color: "#ef4444", margin: "0 0 4px", fontSize: "1.8rem" }}>{summary.missing || missingSections.length}</h2>
+          <p style={{ color: "#d1d5db", margin: 0, fontSize: "0.85rem" }}>Missing Sections</p>
         </div>
 
-        <div
-          style={{
-            background: "#1f2937",
-            padding: "20px",
-            borderRadius: "16px",
-            textAlign: "center"
-          }}
-        >
-          <h1
-            style={{
-              color: "#3b82f6",
-              marginBottom: "10px"
-            }}
-          >
-            {summary.completion_percentage || 0}%
-          </h1>
-
-          <p
-            style={{
-              color: "#d1d5db"
-            }}
-          >
-            Resume Completion
-          </p>
+        <div style={{ background: "#1f2937", padding: "16px 12px", borderRadius: "14px", textAlign: "center" }}>
+          <h2 style={{ color: "#3b82f6", margin: "0 0 4px", fontSize: "1.8rem" }}>{summary.completion_percentage || 0}%</h2>
+          <p style={{ color: "#d1d5db", margin: 0, fontSize: "0.85rem" }}>Completion Rate</p>
         </div>
       </div>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit,minmax(320px,1fr))",
-          gap: "25px"
-        }}
-      >
-        <div
-          style={{
-            background: "#1f2937",
-            borderRadius: "16px",
-            padding: "20px"
-          }}
-        >
-          <h3
-            style={{
-              color: "#22c55e",
-              marginBottom: "20px"
-            }}
-          >
-            ✅ Sections Present
-          </h3>
-
-          {
-            foundSections.length === 0 ? (
-              <p
-                style={{
-                  color: "#94a3b8"
-                }}
-              >
-                No sections detected.
-              </p>
-            ) : (
-              <ul
-                style={{
-                  color: "#e5e7eb",
-                  lineHeight: "2",
-                  paddingLeft: "22px"
-                }}
-              >
-                {
-                  foundSections.map((section, index) => (
-                    <li key={index}>
-                      {section}
-                    </li>
-                  ))
-                }
-              </ul>
-            )
-          }
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "16px" }}>
+        <div className="section-box section-status-found">
+          <h3 style={{ color: "#22c55e", margin: "0 0 12px", fontSize: "1.1rem" }}>✅ Sections Present</h3>
+          {foundSections.length === 0 ? (
+            <p style={{ color: "#94a3b8", margin: 0 }}>No sections detected.</p>
+          ) : (
+            <ul style={{ color: "#e5e7eb", lineHeight: "1.7", margin: 0, paddingLeft: "20px", fontSize: "0.9rem" }}>
+              {foundSections.map((section, index) => (
+                <li key={index}>{section}</li>
+              ))}
+            </ul>
+          )}
         </div>
 
-        <div
-          style={{
-            background: "#1f2937",
-            borderRadius: "16px",
-            padding: "20px"
-          }}
-        >
-          <h3
-            style={{
-              color: "#ef4444",
-              marginBottom: "20px"
-            }}
-          >
-            ❌ Missing Sections
-          </h3>
-
-          {
-            missingSections.length === 0 ? (
-              <p
-                style={{
-                  color: "#22c55e"
-                }}
-              >
-                Excellent! No missing sections detected.
-              </p>
-            ) : (
-              <ul
-                style={{
-                  color: "#e5e7eb",
-                  lineHeight: "2",
-                  paddingLeft: "22px"
-                }}
-              >
-                {
-                  missingSections.map((section, index) => (
-                    <li key={index}>
-                      {section}
-                    </li>
-                  ))
-                }
-              </ul>
-            )
-          }
+        <div className="section-box section-status-missing">
+          <h3 style={{ color: "#ef4444", margin: "0 0 12px", fontSize: "1.1rem" }}>❌ Missing Sections</h3>
+          {missingSections.length === 0 ? (
+            <p style={{ color: "#22c55e", margin: 0 }}>Excellent! No missing sections detected.</p>
+          ) : (
+            <ul style={{ color: "#e5e7eb", lineHeight: "1.7", margin: 0, paddingLeft: "20px", fontSize: "0.9rem" }}>
+              {missingSections.map((section, index) => (
+                <li key={index}>{section}</li>
+              ))}
+            </ul>
+          )}
         </div>
       </div>
 
-      <div
-        style={{
-          marginTop: "30px",
-          background: "#1f2937",
-          padding: "20px",
-          borderRadius: "16px"
-        }}
-      >
-        <h3
-          style={{
-            color: "#60a5fa",
-            marginBottom: "15px"
-          }}
-        >
-          AI Insight
-        </h3>
-
-        <p
-          style={{
-            color: "#cbd5e1",
-            lineHeight: "1.8"
-          }}
-        >
-          Recruiters generally expect resumes to include Education,
-          Technical Skills, Projects, Experience, Certifications,
-          and Achievements. Completing missing sections can improve
-          both ATS compatibility and recruiter confidence.
+      <div style={{ marginTop: "20px", background: "#1f2937", padding: "16px", borderRadius: "14px" }}>
+        <h3 style={{ color: "#60a5fa", margin: "0 0 8px", fontSize: "1.05rem" }}>AI Insight</h3>
+        <p style={{ color: "#cbd5e1", margin: 0, fontSize: "0.88rem", lineHeight: "1.6" }}>
+          Recruiters generally expect Education, Technical Skills, Experience, and Achievements. Completing missing sections improves ATS score and candidate rating.
         </p>
       </div>
     </div>

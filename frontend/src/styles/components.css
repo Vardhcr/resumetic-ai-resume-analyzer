@@ -1,0 +1,321 @@
+/* Results Container */
+.results-section {
+  display: grid;
+  gap: 28px;
+  margin-top: 36px;
+}
+
+.results-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 16px;
+  padding: 0 4px;
+}
+
+.results-title {
+  margin: 0;
+  color: #f1f4ff;
+  font-size: clamp(1.5rem, 3.5vw, 2.3rem);
+  letter-spacing: -0.03em;
+}
+
+.complete-badge {
+  padding: 6px 14px;
+  border-radius: var(--radius-pill);
+  color: #96f0bd;
+  background: rgba(42, 165, 93, 0.15);
+  border: 1px solid rgba(78, 213, 135, 0.3);
+  font-size: 0.82rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* Component Cards */
+.card-container {
+  width: 100%;
+  padding: clamp(18px, 3vw, 30px);
+  border-radius: var(--radius-lg);
+  color: var(--text-primary);
+  background: #111827;
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-card);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 22px;
+}
+
+.card-subtitle {
+  margin: 0;
+  color: var(--text-accent);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.card-title {
+  margin: 4px 0 0;
+  font-size: 1.5rem;
+}
+
+.grade-badge {
+  padding: 8px 16px;
+  border-radius: var(--radius-pill);
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 0.95rem;
+}
+
+/* Score Grid & Gauge */
+.score-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  align-items: start;
+}
+
+.gauge-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.gauge-svg {
+  max-width: 170px;
+  max-height: 170px;
+  width: 100%;
+  height: auto;
+}
+
+.stats-grid-compact {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.stat-box-compact {
+  padding: 14px 10px;
+  border-radius: var(--radius-md);
+  text-align: center;
+  background: #1f2937;
+  border: 1px solid #374151;
+}
+
+.stat-number {
+  display: block;
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.stat-label {
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+}
+
+.priority-box {
+  padding: 18px;
+  border-radius: var(--radius-md);
+  background: #1f2937;
+  border: 1px solid #374151;
+  margin-top: 16px;
+}
+
+.priority-title {
+  margin: 0 0 10px;
+  font-size: 1.05rem;
+}
+
+.priority-list {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding-left: 20px;
+  color: #d6def3;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+/* Statistics Grid */
+.stats-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.stat-card {
+  background: #1f2937;
+  border-radius: var(--radius-md);
+  padding: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: transform 0.2s ease;
+}
+
+.stat-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.stat-card-icon {
+  font-size: 2rem;
+}
+
+.stat-card-value {
+  margin: 16px 0 6px;
+  font-size: 2.2rem;
+  font-weight: 800;
+}
+
+.stat-card-title {
+  color: var(--text-secondary);
+  margin: 0;
+  font-size: 0.88rem;
+}
+
+/* Progress bar */
+.progress-container {
+  margin-top: 28px;
+}
+
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+  font-size: 0.92rem;
+}
+
+.progress-track {
+  width: 100%;
+  height: 12px;
+  background: #374151;
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  border-radius: var(--radius-pill);
+  transition: width 1s ease;
+}
+
+/* Section Analysis Cards */
+.section-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.section-box {
+  padding: 16px;
+  border-radius: var(--radius-md);
+  background: #1f2937;
+  border: 1px solid #374151;
+}
+
+.section-status-found {
+  border-left: 4px solid var(--accent-green);
+}
+
+.section-status-missing {
+  border-left: 4px solid var(--accent-red);
+}
+
+/* Skills Cloud */
+.skills-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.skill-tag {
+  padding: 6px 14px;
+  border-radius: var(--radius-pill);
+  font-size: 0.85rem;
+  font-weight: 600;
+  background: rgba(131, 166, 255, 0.12);
+  border: 1px solid rgba(131, 166, 255, 0.25);
+  color: #cdd8ff;
+}
+
+.skill-tag.missing {
+  background: rgba(239, 107, 121, 0.12);
+  border: 1px solid rgba(239, 107, 121, 0.25);
+  color: #ffc4cb;
+}
+
+/* Recommendations Accordion & Panel */
+.recommendation-panel {
+  padding: clamp(20px, 3vw, 30px);
+  border: 1px solid rgba(141, 117, 231, 0.28);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(120deg, #221b42, #13192f);
+  box-shadow: 0 18px 38px rgba(4, 6, 17, 0.4);
+}
+
+.panel-heading {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.panel-icon {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  color: #25133e;
+  font-size: 1.25rem;
+  background: linear-gradient(135deg, var(--accent-primary), var(--accent-purple));
+  flex-shrink: 0;
+}
+
+.panel-title {
+  margin: 0;
+  color: #f3f5ff;
+  font-size: 1.45rem;
+}
+
+.recommendations-list {
+  margin: 0;
+  padding-left: 20px;
+  color: #d8ddf2;
+  line-height: 1.75;
+}
+
+.recommendations-list li {
+  margin-bottom: 10px;
+}
+
+/* Extracted Text Preview Panel */
+.preview-panel {
+  padding: clamp(20px, 3vw, 30px);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-lg);
+  background: rgba(18, 25, 44, 0.86);
+}
+
+.preview-text {
+  margin: 16px 0 0;
+  color: #c5cce2;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: inherit;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  max-height: 400px;
+  overflow-y: auto;
+  padding-right: 8px;
+}

@@ -43,15 +43,17 @@ function ATSScoreMap({ atsScore, breakdown, rawPoints, maximumPoints }) {
   if (!breakdown.length) return null;
 
   return (
-    <section style={{ marginBottom: "30px" }} aria-labelledby="score-map-title">
-      <h3 id="score-map-title" style={{ margin: "0 0 8px", textAlign: "center" }}>How this score is calculated</h3>
-      <p style={{ margin: "0 0 16px", color: "#9ca3af", fontSize: "13px", textAlign: "center" }}>
-        Hover, focus, or tap a ring segment to see its points.
+    <section style={{ marginBottom: "20px" }} aria-labelledby="score-map-title">
+      <h3 id="score-map-title" style={{ margin: "0 0 6px", textAlign: "center", fontSize: "1.1rem" }}>
+        How this score is calculated
+      </h3>
+      <p style={{ margin: "0 0 14px", color: "#9ca3af", fontSize: "0.82rem", textAlign: "center" }}>
+        Hover, focus, or tap a ring segment to inspect its score contribution.
       </p>
 
-      <svg viewBox={`0 0 ${SIZE} ${SIZE}`} role="img" aria-label="Interactive ATS score calculation map" style={{ width: "min(100%, 360px)", display: "block", margin: "0 auto" }}>
+      <svg viewBox={`0 0 ${SIZE} ${SIZE}`} role="img" aria-label="Interactive ATS score calculation map" style={{ width: "min(100%, 320px)", display: "block", margin: "0 auto" }}>
         <circle cx={CENTER} cy={CENTER} r={INNER_RADIUS - 10} fill="#1f2937" stroke="#374151" />
-        <text x={CENTER} y={CENTER - 10} textAnchor="middle" fill="#ffffff" fontSize="46" fontWeight="700">{atsScore}</text>
+        <text x={CENTER} y={CENTER - 10} textAnchor="middle" fill="#ffffff" fontSize="44" fontWeight="700">{atsScore}</text>
         <text x={CENTER} y={CENTER + 22} textAnchor="middle" fill="#9ca3af" fontSize="14">ATS score</text>
 
         {breakdown.map((item, index) => {
@@ -75,7 +77,7 @@ function ATSScoreMap({ atsScore, breakdown, rawPoints, maximumPoints }) {
               onKeyDown={(event) => {
                 if (event.key === "Enter" || event.key === " ") setSelectedIndex(index);
               }}
-              style={{ cursor: "pointer", transition: "fill-opacity 160ms ease" }}
+              style={{ cursor: "pointer", transition: "fill-opacity 160ms ease", touchAction: "manipulation" }}
             >
               <title>{`${item.label}: ${item.points}/${item.maximum}`}</title>
             </path>
@@ -83,12 +85,14 @@ function ATSScoreMap({ atsScore, breakdown, rawPoints, maximumPoints }) {
         })}
       </svg>
 
-      <div style={{ marginTop: "14px", minHeight: "72px", padding: "14px", borderRadius: "12px", background: "#1f2937", border: "1px solid #374151", textAlign: "left" }} aria-live="polite">
-        <strong style={{ display: "block", color: "#ffffff" }}>{selected.label}: {selected.points}/{selected.maximum}</strong>
-        <span style={{ color: "#cbd5e1", fontSize: "14px" }}>{selected.points ? "This category contributes to your ATS score." : "No points were detected in this category yet."}</span>
+      <div style={{ marginTop: "12px", minHeight: "64px", padding: "12px 14px", borderRadius: "12px", background: "#1f2937", border: "1px solid #374151", textAlign: "left" }} aria-live="polite">
+        <strong style={{ display: "block", color: "#ffffff", fontSize: "0.95rem" }}>{selected.label}: {selected.points}/{selected.maximum}</strong>
+        <span style={{ color: "#cbd5e1", fontSize: "0.85rem" }}>
+          {selected.points ? "This category contributes positively to your ATS score." : "No points detected in this category yet."}
+        </span>
       </div>
-      <p style={{ margin: "14px 0 0", color: "#9ca3af", fontSize: "13px", lineHeight: 1.5, textAlign: "center" }}>
-        Raw calculation: {rawPoints}/{maximumPoints} points, normalized to 100.
+      <p style={{ margin: "10px 0 0", color: "#9ca3af", fontSize: "0.8rem", textAlign: "center" }}>
+        Raw points: {rawPoints}/{maximumPoints}, normalized to 100.
       </p>
     </section>
   );

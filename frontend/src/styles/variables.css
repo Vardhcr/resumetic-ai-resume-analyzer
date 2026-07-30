@@ -1,0 +1,32 @@
+:root {
+  /* Color Palette - Dark Glassmorphism */
+  --bg-dark: #090d1b;
+  --bg-card: #151b31a6;
+  --bg-panel: #12182cd9;
+  --bg-gradient: radial-gradient(circle at 15% 6%, #23356e 0, transparent 27%), radial-gradient(circle at 90% 20%, #432465 0, transparent 26%), #090d1b;
+  
+  --text-primary: #eaf0ff;
+  --text-secondary: #9dabcf;
+  --text-muted: #7583a7;
+  --text-accent: #9caeff;
+  
+  --accent-primary: #83a6ff;
+  --accent-purple: #d886ff;
+  --accent-green: #58e5a1;
+  --accent-yellow: #f6bc5a;
+  --accent-red: #ef6b79;
+
+  --border-light: rgba(131, 151, 234, 0.23);
+  --border-glass: rgba(157, 171, 238, 0.26);
+
+  --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.35);
+  --shadow-glow: 0 0 20px rgba(86, 221, 159, 0.25);
+
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 22px;
+  --radius-pill: 9999px;
+
+  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Consolas, monospace;
+}
