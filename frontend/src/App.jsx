@@ -56,13 +56,20 @@ function App() {
 
     const formData = new FormData();
     formData.append("file", file);
+
     console.log("API Base URL:", API.defaults.baseURL);
+
     try {
-    const { data } = await API.post("/resume/upload", formData, {
-    headers: {
-    "Content-Type": "multipart/form-data",
-    },
+    const response = await API.post("/resume/upload", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
     });
+
+  console.log("Response Status:", response.status);
+  console.log("Response Data:", response.data);
+
+  const data = response.data;
       if (!data?.success) {
         throw new Error(data?.message || "The resume could not be analyzed.");
       }
