@@ -58,8 +58,11 @@ function App() {
     formData.append("file", file);
     console.log("API Base URL:", API.defaults.baseURL);
     try {
-      const { data } = await API.post("/resume/upload", formData);
-
+    const { data } = await API.post("/resume/upload", formData, {
+    headers: {
+    "Content-Type": "multipart/form-data",
+    },
+    });
       if (!data?.success) {
         throw new Error(data?.message || "The resume could not be analyzed.");
       }
@@ -84,23 +87,22 @@ function App() {
         },
       });
       setMessage(data.message || "Resume analyzed successfully.");
-    } catch (uploadError) {
-  console.error("========== FULL ERROR ==========");
+    }  catch (uploadError) {
+  alert(
+    JSON.stringify(
+      {
+        message: uploadError.message,
+        code: uploadError.code,
+        status: uploadError.response?.status,
+        data: uploadError.response?.data,
+      },
+      null,
+      2
+    )
+  );
+
   console.error(uploadError);
-
-  console.error("Response:");
-  console.error(uploadError.response);
-
-  console.error("Data:");
-  console.error(uploadError.response?.data);
-
-  console.error("Message:");
-  console.error(uploadError.message);
-
-  console.error("Stack:");
-  console.error(uploadError.stack);
-
-  setError(uploadError.message);
+  setError(uploadError.message || "Upload failed");
 } finally {
       setLoading(false);
     }
