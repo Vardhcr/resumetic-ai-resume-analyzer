@@ -171,6 +171,66 @@ http://localhost:5173
 
 ---
 
+# 📱 Testing on Mobile (Same Wi-Fi)
+
+To open the website from your phone while developing locally:
+
+1. **Find your computer's LAN IP address**
+
+   - **Windows (PowerShell):** `ipconfig` → look for `IPv4 Address` under your active Wi-Fi adapter (e.g. `192.168.1.5`)
+   - **macOS/Linux:** `ipconfig getifaddr en0` / `hostname -I`
+
+2. **Run the backend so it listens on your whole network** (not just localhost):
+
+   ```bash
+   cd backend
+   uvicorn app.main:app --host 0.0.0.0 --port 8000
+   ```
+
+3. **Run the frontend dev server** (Vite already binds to `0.0.0.0`):
+
+   ```bash
+   cd frontend
+   npm run dev
+   ```
+
+4. **Open the app from your phone:** browse to
+
+   ```
+   http://<YOUR-LAN-IP>:5173
+   ```
+
+   e.g. `http://192.168.1.5:5173`
+
+> 💡 The frontend automatically detects your LAN IP and calls the backend at
+> `http://<YOUR-LAN-IP>:8000`. The backend CORS settings accept private IP origins
+> (`192.168.x.x`, `10.x.x.x`, `172.16-31.x.x`), so the upload will work from your phone.
+
+### 🔥 Windows Firewall (if the phone can't connect)
+
+Allow incoming connections on ports **5173** and **8000** for private networks:
+
+```powershell
+netsh advfirewall firewall add rule name="Resumetic Frontend" dir=in action=allow protocol=TCP localport=5173
+netsh advfirewall firewall add rule name="Resumetic Backend" dir=in action=allow protocol=TCP localport=8000
+```
+
+### 🔧 Overriding the backend URL
+
+If the automatic URL detection doesn't fit your setup, create a `.env` file in `frontend/`:
+
+```env
+VITE_API_BASE_URL=http://192.168.1.5:8000
+```
+
+Then restart the frontend dev server.
+
+> ⚠️ If the page is served over **HTTPS** but the backend URL uses `http://`,
+> browsers block the request as "mixed content". Prefer serving both over the same
+> protocol (both http on LAN, or both https in production).
+
+---
+
 # API Overview
 
 ## Upload Resume

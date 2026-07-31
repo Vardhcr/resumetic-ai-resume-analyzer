@@ -14,9 +14,14 @@ origins = [
     "https://resumetic-ai-resume-analyzer-production.up.railway.app",
 ]
 
+# Allow any LAN/private IP origin (e.g. http://192.168.1.5:5173 or http://10.0.0.3:5173)
+# so the app can be opened from a phone on the same Wi-Fi during development.
+allow_origin_regex = r"^http://(\d{1,3}\.){3}\d{1,3}(:\d+)?$"
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
+    allow_origin_regex=allow_origin_regex,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

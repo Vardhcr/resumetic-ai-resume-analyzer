@@ -94,22 +94,29 @@ function App() {
         },
       });
       setMessage(data.message || "Resume analyzed successfully.");
-    }  catch (err) {
-  console.error("Axios Error:", err);
+    } catch (err) {
+      console.error("Axios Error:", err);
 
-  let msg = "";
+      let msg = "Upload failed. Please try again.";
 
-  if (err.code) msg += `Code: ${err.code}\n`;
-  if (err.message) msg += `Message: ${err.message}\n`;
-  if (err.response?.status) msg += `Status: ${err.response.status}\n`;
-  if (err.config?.baseURL) msg += `BaseURL: ${err.config.baseURL}\n`;
+      if (err.code === "ERR_NETWORK") {
+        msg =
+          "Could not reach the analysis server. If you are on a phone, make sure the phone and computer are on the same Wi-Fi and the backend is running with --host 0.0.0.0.";
+      } else if (err.response?.status === 413) {
+        msg = "The PDF file is too large to upload.";
+      } else if (err.response?.status === 400) {
+        msg = err.response?.data?.detail || "This file could not be accepted. Please upload a valid PDF.";
+      } else if (err.response?.status === 500) {
+        msg = "The server could not process this resume. Please try a different PDF.";
+      } else if (err.message) {
+        msg = err.message;
+      }
 
-  alert(msg);
-
-  setError(err.message || "Upload failed");
-} finally {
-  setLoading(false);
-}}
+      setError(msg);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   const handleFileChange = (event) => {
     const file = event.target.files?.[0];
