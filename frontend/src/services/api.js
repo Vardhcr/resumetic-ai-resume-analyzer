@@ -19,7 +19,7 @@ const isPrivateAddress = (hostname) => {
   return false;
 };
 
-// Dynamic API URL resolution
+// Dynamic primary API URL resolution
 const getBaseURL = () => {
   if (import.meta.env.VITE_API_BASE_URL) {
     return import.meta.env.VITE_API_BASE_URL.replace(/\/$/, "");
@@ -41,12 +41,54 @@ const getBaseURL = () => {
   return PRODUCTION_URL;
 };
 
-const API = axios.create({
-  baseURL: getBaseURL(),
+const primaryURL = getBaseURL();
+const primaryIsProduction = primaryURL === PRODUCTION_URL;
+
+const primary = axios.create({
+  baseURL: primaryURL,
+  timeout: 60000,
+});
+
+const fallback = axios.create({
+  baseURL: PRODUCTION_URL,
   timeout: 60000,
 });
 
 // Expose resolved base URL for debugging (visible in the browser console)
-console.info("[Resumetic] API base URL:", API.defaults.baseURL);
+console.info("[Resumetic] API base URL:", primary.defaults.baseURL);
+
+/**
+ * Wraps requests so that network-level failures against the primary backend
+ * automatically retry against the production backend.
+ *
+ * This makes the app work from a phone even when the local backend isn't
+ * running, is bound to 127.0.0.1 only, or is blocked by the Windows firewall.
+ */
+const request = async (method, url, ...args) => {
+  try {
+    return await primary[method](url, ...args);
+  } catch (err) {
+    // Only fall back for network-level errors (no response received).
+    // A server response (e.g. 400/413/500) carries real information, so
+    // surface it to the user instead of retrying.
+    if (!err.response && !primaryIsProduction) {
+      console.warn(
+        `[Resumetic] ${primary.defaults.baseURL} unreachable, retrying ${PRODUCTION_URL}`
+      );
+      return await fallback[method](url, ...args);
+    }
+    throw err;
+  }
+};
+
+const API = {
+  get: (url, config) => request("get", url, config),
+  post: (url, body, config) => request("post", url, body, config),
+  put: (url, body, config) => request("put", url, body, config),
+  patch: (url, body, config) => request("patch", url, body, config),
+  delete: (url, config) => request("delete", url, config),
+  defaults: primary.defaults,
+};
 
 export default API;
+
