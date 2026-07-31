@@ -60,11 +60,10 @@ function App() {
     console.log("API Base URL:", API.defaults.baseURL);
 
     try {
-    const response = await API.post("/resume/upload", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
+      // Do NOT set Content-Type manually: the browser must generate the
+      // multipart boundary, otherwise some mobile browsers fail to parse the
+      // upload server-side.
+      const response = await API.post("/resume/upload", formData);
 
   console.log("Response Status:", response.status);
   console.log("Response Data:", response.data);
@@ -246,7 +245,7 @@ function App() {
             <h2 className="upload-title">Ready when you are</h2>
             <p className="upload-text">Upload or drop your PDF resume for instant deep analysis.</p>
           </div>
-          <input ref={fileInputRef} type="file" accept="application/pdf,.pdf" onChange={handleFileChange} hidden />
+          <input ref={fileInputRef} type="file" accept="application/pdf,.pdf" onChange={handleFileChange} className="sr-only" />
           <button type="button" onClick={openFilePicker} disabled={loading} className="upload-btn">
             {loading ? "Analyzing resume..." : "Upload PDF"}
             {!loading && <span aria-hidden="true">→</span>}
@@ -338,7 +337,7 @@ function App() {
 
       {/* Sticky Mobile Upload Button */}
       <div className="mobile-sticky-upload">
-        <input ref={stickyFileInputRef} type="file" accept="application/pdf,.pdf" onChange={handleFileChange} hidden />
+        <input ref={stickyFileInputRef} type="file" accept="application/pdf,.pdf" onChange={handleFileChange} className="sr-only" />
         <button type="button" onClick={openStickyFilePicker} disabled={loading} className="upload-btn" style={{ width: "100%" }}>
           {loading ? "Analyzing..." : "Upload New Resume PDF"}
         </button>

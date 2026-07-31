@@ -24,7 +24,11 @@ def test_resume_route():
 @router.post("/upload")
 async def upload_resume(file: UploadFile = File(...)):
     try:
-        if file.content_type != "application/pdf":
+        # Mobile browsers (especially iOS) often send an empty or generic
+        # content type for PDFs picked from the Files app, so also accept any
+        # file whose name ends with ".pdf".
+        filename = (file.filename or "").lower()
+        if file.content_type != "application/pdf" and not filename.endswith(".pdf"):
             raise HTTPException(
                 status_code=400,
                 detail="Only PDF files are allowed."
