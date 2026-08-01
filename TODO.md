@@ -28,3 +28,14 @@
 - [ ] 13. Verify the GitHub Pages site serves the fixed bundle containing the mobile fallback logic.
 - [ ] 14. Open the live URL on a phone and upload a resume PDF to confirm it works.
 
+## Phase 6 — Fix CORS for GitHub Pages origin on Railway backend
+- [x] 15. **Diagnose CORS block** — Confirmed Railway backend drops `Access-Control-Allow-Origin`
+      for `https://vardhcr.github.io` origin (browser blocks upload → ERR_NETWORK).
+- [x] 16. **Add `https://vardhcr.github.io` to `allow_origins`** in `backend/app/main.py`
+- [x] 17. **Extend `allow_origin_regex`** to also match `https://<user|org>.github.io`
+- [x] 18. **Commit and push** the CORS fix to `main` (commit `a3ad937`)
+- [ ] 19. **Redeploy Railway backend** — The Railway service linked to the repo needs to redeploy
+      so the CORS change takes effect. Go to https://railway.app → your project → deploy
+      latest commit, OR trigger a manual redeploy from the Railway dashboard.
+      After redeploy, the app will work from `https://vardhcr.github.io/resumetic-ai-resume-analyzer/`.
+
