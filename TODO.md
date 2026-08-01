@@ -13,10 +13,18 @@
 - [x] 6. Run `npm run build` in `frontend/` to confirm no build errors
 
 ## Phase 4 — Deploy the fixed bundle (NEW: GitHub Pages)
-- [ ] 7. Set Vite `base: './'` so the build works from the GitHub Pages sub-path
-- [ ] 8. Add GitHub Actions workflow `.github/workflows/deploy.yml` that builds `frontend/` and publishes `dist/` to the `gh-pages` branch
-- [ ] 9. Update `.gitignore` — ignore diagnostic `scripts/` helpers and `upload_response.json`
-- [ ] 10. Update `README.md` — document the GitHub Pages live URL
-- [ ] 11. Push the workflow commit (enables GitHub Pages auto-deploy from `main` pushes)
-- [ ] 12. Verify the GitHub Pages site serves the fixed bundle containing the mobile fallback logic
+- [x] 7. Set Vite `base: './'` so the build works from the GitHub Pages sub-path
+- [x] 8. Add GitHub Actions workflow `.github/workflows/deploy.yml` that builds `frontend/` and publishes `dist/` to GitHub Pages (Actions source)
+- [x] 9. Update `.gitignore` — ignore diagnostic `scripts/` helpers and `upload_response.json`
+- [x] 10. Update `README.md` — document the GitHub Pages live URL
+- [x] 11. Push the workflow commit (commit `bcefd4a`, pushed to `origin/main`)
+
+## Phase 5 — Enable GitHub Pages (ONE-TIME MANUAL STEP)
+- [ ] 12. **Enable Pages in repo settings:** GitHub → Settings → Pages → Source: **GitHub Actions**.
+      This is required before the `deploy-pages` action can publish. The workflow's
+      **build job already succeeds**; once Pages is enabled, re-run the workflow (or push
+      a trivial commit) and the deploy step will publish `frontend/dist` to
+      `https://vardhcr.github.io/resumetic-ai-resume-analyzer/`.
+- [ ] 13. Verify the GitHub Pages site serves the fixed bundle containing the mobile fallback logic.
+- [ ] 14. Open the live URL on a phone and upload a resume PDF to confirm it works.
 

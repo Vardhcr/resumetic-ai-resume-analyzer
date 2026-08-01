@@ -31,4 +31,8 @@ node_modules
 scripts/check_deploys.ps1
 scripts/check_site.ps1
 scripts/direct_deploy_test.ps1
+scripts/check_gh.ps1
+scripts/check_gh_pages.ps1
+scripts/check_workflow.ps1
+scripts/check_deploy_error.ps1
 upload_response.json
