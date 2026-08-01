@@ -22,3 +22,4 @@ frontend/node_modules/
 .DS_Store
 Thumbs.db
 AI-Resume output.pdf
+node_modules

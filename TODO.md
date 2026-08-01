@@ -1,14 +1,24 @@
-# TODO — Make Resumetic work on Mobile (Website, no PWA)
+# TODO — Fix Resumetic on Mobile (Deployment Issue)
 
-## Phase 1 — Fix the core mobile blocker
-- [x] 1. Update `backend/app/main.py` — add `allow_origin_regex` for LAN IP origins (CORS fix)
+## Problem
+The deployed Netlify site (`resumetic.netlify.app`) serves a **stale bundle** that
+predates the mobile fixes. The latest mobile fixes exist in the repo but were never
+deployed:
+- No automatic fallback to the production Railway backend
+- Old IP-detection tries to reach a local backend from any IP hostname
+- No `VITE_API_BASE_URL` support in the deployed build
+- `<title>frontend</title>` instead of the branded title
 
-## Phase 2 — Mobile UX polish
-- [x] 2. Update `frontend/src/services/api.js` — HTTPS/mixed-content protection + better base-URL logging
-- [x] 3. Update `frontend/src/App.jsx` — replace `alert()` with inline mobile-friendly error banner
-- [x] 4. Update `README.md` — add "Test on Mobile" section (uvicorn `--host 0.0.0.0`, firewall note)
-- [x] 5. Update `frontend/.env.example` — document `VITE_API_BASE_URL`
+## Phase 1 — Code/config polish
+- [ ] 1. Update `frontend/index.html` — branded title "Resumetic — AI Resume Analyzer"
+- [ ] 2. Review/confirm `netlify.toml` build config is correct
+
+## Phase 2 — Build & deploy
+- [ ] 3. Run `npm run build` in `frontend/` to confirm no build errors
+- [ ] 4. Commit changes and push to `origin/main` to trigger Netlify rebuild
+- [ ] 5. (If needed) Deploy via Netlify CLI
 
 ## Phase 3 — Verify
-- [x] 6. Run `npm run build` in `frontend/` to confirm no build errors
+- [ ] 6. Confirm Netlify now serves the latest bundle (contains fallback logic)
+- [ ] 7. Verify mobile access works
 
