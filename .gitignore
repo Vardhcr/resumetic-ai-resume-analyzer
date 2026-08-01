@@ -23,3 +23,12 @@ frontend/node_modules/
 Thumbs.db
 AI-Resume output.pdf
 node_modules
+
+# Local Netlify folder
+.netlify
+
+# Diagnostic scripts and temp files
+scripts/check_deploys.ps1
+scripts/check_site.ps1
+scripts/direct_deploy_test.ps1
+upload_response.json

@@ -231,10 +231,31 @@ Then restart the frontend dev server.
 
 ---
 
-# 🌐 Deployment (Netlify)
+# 🌐 Deployment
 
-The frontend is deployed to **Netlify** (`https://resumetic.netlify.app`). The
-`netlify.toml` config:
+## GitHub Pages (primary)
+
+The frontend is deployed automatically to **GitHub Pages** via a GitHub Actions
+workflow (`.github/workflows/deploy.yml`). Every push to `main` rebuilds the
+frontend and publishes it.
+
+- **Live URL:** `https://vardhcr.github.io/resumetic-ai-resume-analyzer/`
+- **How it works:** The workflow checks out the repo, installs frontend deps
+  (`npm ci`), runs `npm run build`, uploads `frontend/dist` as a Pages
+  artifact, and deploys it. `vite.config.js` sets `base: './'` so all asset
+  paths work under the `/resumetic-ai-resume-analyzer/` sub-path.
+- **Enable in repo settings:** GitHub → Settings → Pages → Source:
+  **GitHub Actions**.
+
+> The production app always calls the **Railway backend**
+> (`https://resumetic-ai-resume-analyzer-production.up.railway.app`) because
+> the hostname isn't a private/LAN address — so uploads work from any phone
+> without any local backend.
+
+## Netlify (legacy)
+
+The frontend was previously deployed to **Netlify** (`https://resumetic.netlify.app`).
+The `netlify.toml` config:
 
 ```toml
 [build]
@@ -246,10 +267,11 @@ The frontend is deployed to **Netlify** (`https://resumetic.netlify.app`). The
   NODE_VERSION = "22.12.0"
 ```
 
-> ⚠️ **Important:** Vite 8 requires **Node 20.19+ or 22.12+**. Netlify's older
-> default Node versions can silently fail the build and leave a **stale deploy**
-> live (this caused the mobile fixes to appear "missing" in production). The
-> `NODE_VERSION` pin above ensures the build always uses a compatible Node.
+> ⚠️ **Why GitHub Pages:** Netlify's builds were skipped with
+> *"Account credit usage exceeded"*, leaving a **stale bundle** live that lacked
+> the mobile fixes. GitHub Pages has **no credit limits**, so deployments can't
+> be blocked. Vite 8 also requires **Node 20.19+/22.12+**; older Node builds can
+> silently fail and keep stale code live.
 
 ### Mobile behavior in production
 
