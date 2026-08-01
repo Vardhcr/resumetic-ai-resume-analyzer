@@ -231,6 +231,37 @@ Then restart the frontend dev server.
 
 ---
 
+# 🌐 Deployment (Netlify)
+
+The frontend is deployed to **Netlify** (`https://resumetic.netlify.app`). The
+`netlify.toml` config:
+
+```toml
+[build]
+  base = "frontend"
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22.12.0"
+```
+
+> ⚠️ **Important:** Vite 8 requires **Node 20.19+ or 22.12+**. Netlify's older
+> default Node versions can silently fail the build and leave a **stale deploy**
+> live (this caused the mobile fixes to appear "missing" in production). The
+> `NODE_VERSION` pin above ensures the build always uses a compatible Node.
+
+### Mobile behavior in production
+
+- The deployed app always calls the **production Railway backend**
+  (`https://resumetic-ai-resume-analyzer-production.up.railway.app`).
+- If the page is opened from a phone on your LAN via `http://<LAN-IP>:5173`
+  during development, the app first tries the local backend and
+  **automatically falls back to the production backend** if the local one is
+  unreachable — so uploads keep working even without a local backend running.
+
+---
+
 # API Overview
 
 ## Upload Resume
