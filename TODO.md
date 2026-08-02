@@ -20,13 +20,10 @@
 - [x] 11. Push the workflow commit (commit `bcefd4a`, pushed to `origin/main`)
 
 ## Phase 5 — Enable GitHub Pages (ONE-TIME MANUAL STEP)
-- [ ] 12. **Enable Pages in repo settings:** GitHub → Settings → Pages → Source: **GitHub Actions**.
-      This is required before the `deploy-pages` action can publish. The workflow's
-      **build job already succeeds**; once Pages is enabled, re-run the workflow (or push
-      a trivial commit) and the deploy step will publish `frontend/dist` to
-      `https://vardhcr.github.io/resumetic-ai-resume-analyzer/`.
-- [ ] 13. Verify the GitHub Pages site serves the fixed bundle containing the mobile fallback logic.
-- [ ] 14. Open the live URL on a phone and upload a resume PDF to confirm it works.
+- [x] 12. **Enable Pages in repo settings:** GitHub → Settings → Pages → Source: **GitHub Actions**.
+      The workflow's build job now succeeds; Pages deploys from Actions.
+- [x] 13. Verify the GitHub Pages site serves the fixed bundle containing the mobile fallback logic.
+- [ ] 14. Open the live GitHub Pages URL on a phone and upload a resume PDF to confirm it works.
 
 ## Phase 6 — Fix CORS for GitHub Pages origin on Railway backend
 - [x] 15. **Diagnose CORS block** — Confirmed Railway backend drops `Access-Control-Allow-Origin`
@@ -34,8 +31,34 @@
 - [x] 16. **Add `https://vardhcr.github.io` to `allow_origins`** in `backend/app/main.py`
 - [x] 17. **Extend `allow_origin_regex`** to also match `https://<user|org>.github.io`
 - [x] 18. **Commit and push** the CORS fix to `main` (commit `a3ad937`)
-- [ ] 19. **Redeploy Railway backend** — The Railway service linked to the repo needs to redeploy
-      so the CORS change takes effect. Go to https://railway.app → your project → deploy
-      latest commit, OR trigger a manual redeploy from the Railway dashboard.
-      After redeploy, the app will work from `https://vardhcr.github.io/resumetic-ai-resume-analyzer/`.
+- [x] 19. **Redeploy Railway backend** — CORS change now live; verified via preflight probes from
+      BOTH `https://vardhcr.github.io` AND `https://resumetic.netlify.app` (HTTP 200 + ACAO confirmed).
+      Full PDF upload from both origins returns HTTP 200 + `success:true`.
+
+## Phase 7 — Surface real errors & deploy latest bundle
+- [x] 20. **Verify backend end-to-end** — Upload from both deployed origins returns HTTP 200,
+      `success:true`, full ATS analysis (tested via `scripts/e2e_test.ps1`).
+- [x] 21. **Update `frontend/src/App.jsx` catch block** — surface the REAL error (HTTP status,
+      server detail, or axios `ERR_NETWORK` code + attempted backend URL) instead of hiding it
+      behind a generic mobile hint. Committed & pushed as `0bfdc5b`.
+- [ ] 22. **Wait for GitHub Actions deploy** and verify `https://vardhcr.github.io/resumetic-ai-resume-analyzer/`
+      now serves the latest bundle (`index-Clm5xKI4.js`) containing:
+      - Railway fallback logic
+      - `isProductionHost` context-aware messaging
+      - Real-error surfacing
+- [ ] 23. **Netlify redeploy** (`resumetic.netlify.app`) — currently serving STALE bundle
+      (`index-QgmcDnDE.js`, no fallback). Redeploy to serve the latest code.
+- [ ] 24. **Final phone test** — Open the deployed URL on a phone, upload a PDF, confirm analysis appears.
+      If a network error occurs, the new message now shows the exact backend URL + error code
+      so the root cause is visible instead of a generic message.
+
+## Phase 8 — Verify deployed bundle (GitHub Pages)
+- [x] 25. **Confirmed live GitHub Pages serves the LATEST bundle** (`index-Clm5xKI4.js`):
+      - Railway fallback logic present
+      - `isProductionHost` context-aware messaging present
+      - Real-error surfacing present (`Network error`, HTTP status 413/500 handling)
+- [ ] 26. **Netlify redeploy** (`resumetic.netlify.app`) — STILL serving stale `index-QgmcDnDE.js`
+      without fallback. Redeploy Netlify (or use GitHub Pages URL which is current) for the mobile test.
+- [x] 27. **Full end-to-end upload verified** from both origins (`vardhcr.github.io` + `resumetic.netlify.app`)
+      → HTTP 200, `success:true`, complete ATS analysis returned from Railway backend.
 
