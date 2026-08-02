@@ -62,3 +62,23 @@
 - [x] 27. **Full end-to-end upload verified** from both origins (`vardhcr.github.io` + `resumetic.netlify.app`)
       → HTTP 200, `success:true`, complete ATS analysis returned from Railway backend.
 
+## Phase 9 — Fix Railway cold-start (the REAL mobile blocker)
+- [x] 28. **Root cause found** — Phone upload still failed with `ERR_NETWORK` even though backend +
+      CORS verified working from desktop. The Railway free-tier instance sleeps when idle; the
+      first upload from a fresh phone hits a sleeping instance and drops the connection.
+- [x] 29. **`frontend/src/services/api.js`** — added `warmUp()` that pings the backend on page load
+      (guarded, 12s timeout) so the instance is awake before the user picks a file.
+- [x] 30. **`frontend/src/services/api.js`** — `request()` now auto-retries network-level failures
+      against the PRODUCTION backend up to 3 attempts with exponential backoff (2s, 4s) so
+      cold-start wake-ups self-heal. Local fallback behavior preserved.
+- [x] 31. **`frontend/src/services/api.js`** — axios timeout raised to 90s for slow mobile uploads.
+- [x] 32. **`frontend/src/App.jsx`** — added `useEffect` calling `API.warmUp()` on mount.
+- [x] 33. **`frontend/src/App.jsx`** — error message now notes "we retried automatically".
+- [x] 34. **Built + pushed** (`f6ea2a0`) → GitHub Actions redeployed.
+- [x] 35. **Verified live** — GitHub Pages serves `index-Czm1llk_.js` (matches local build);
+      bundle contains warm-up, retry/backoff, max-attempts, `isProductionHost`, and the
+      updated "we retried automatically" message.
+- [ ] 36. **Final phone test** — Hard-refresh the GitHub Pages URL on the phone, upload a PDF.
+      First page-load warms the backend; if the instance was cold, the upload auto-retries.
+
+      
