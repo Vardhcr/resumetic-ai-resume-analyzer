@@ -28,6 +28,7 @@ origins = [
 # so the app can be opened from a phone on the same Wi-Fi during development.
 # Also allow any GitHub Pages project site (https://<user-or-org>.github.io)
 # so the app keeps working if Pages is enabled from another account/org.
+
 allow_origin_regex = (
     r"^(http://(\d{1,3}\.){3}\d{1,3}(:\d+)?|"
     r"https://[a-zA-Z0-9-]+\.github\.io|"
