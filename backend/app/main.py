@@ -4,17 +4,24 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api.routes.resume import router as resume_router
 
 app = FastAPI(title="Resumetic API", version="2.0")
-
 origins = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
 
+    # Vercel
+    "https://resumetic-ai-resume-analyzer.vercel.app",
+
+    # GitHub Pages
+    "https://vardhcr.github.io",
+
+    # Netlify
     "https://resumetic.netlify.app",
 
+    # Railway
     "https://resumetic-ai-resume-analyzer-production.up.railway.app",
 
-    # GitHub Pages (primary deployment since Jul 2026)
-    "https://vardhcr.github.io",
+    # Render (optional)
+    "https://resumetic-ai-resume-analyzer.onrender.com",
 ]
 
 # Allow any LAN/private IP origin (e.g. http://192.168.1.5:5173 or http://10.0.0.3:5173)
@@ -23,7 +30,8 @@ origins = [
 # so the app keeps working if Pages is enabled from another account/org.
 allow_origin_regex = (
     r"^(http://(\d{1,3}\.){3}\d{1,3}(:\d+)?|"
-    r"https://[a-zA-Z0-9-]+\.github\.io)$"
+    r"https://[a-zA-Z0-9-]+\.github\.io|"
+    r"https://.*\.vercel\.app)$"
 )
 
 app.add_middleware(

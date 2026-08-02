@@ -1,0 +1,4 @@
+﻿=== CORS Probe ===
+HTTP: 200
+Access-Control-Allow-Origin: [https://vardhcr.github.io]
+RESULT: CORS FIX IS LIVE

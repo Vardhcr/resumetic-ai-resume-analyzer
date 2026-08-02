@@ -1,0 +1,1 @@
+﻿railway_url:       True fallback_logic:    True isProductionHost:  True real_error_msg:    True status_in_msg:     True (413/500 handling) attempted_url:     False

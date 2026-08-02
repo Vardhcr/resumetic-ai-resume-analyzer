@@ -1,0 +1,5 @@
+﻿
+-- === Upload test from origin: https://vardhcr.github.io ===
+{"success":true,"message":"Resume analyzed successfully.","analysis":{"ats_score":5,"resume_grade":"F","statistics":{"word_count":15,"estimated_pages":1,"total_skills":4,"completed_sections":1,"missing_sections":6,"ats_score":5,"resume_grade":"F"},"skills":{"total":4,"items":["AWS","FastAPI","Python
+-- === Upload test from origin: https://resumetic.netlify.app ===
+{"success":true,"message":"Resume analyzed successfully.","analysis":{"ats_score":5,"resume_grade":"F","statistics":{"word_count":15,"estimated_pages":1,"total_skills":4,"completed_sections":1,"missing_sections":6,"ats_score":5,"resume_grade":"F"},"skills":{"total":4,"items":["AWS","FastAPI","Python

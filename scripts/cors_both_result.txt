@@ -1,0 +1,3 @@
+﻿=== CORS probe for both deployed origins ===
+Origin: https://vardhcr.github.io -> HTTP 200 | ACAO: [https://vardhcr.github.io]
+Origin: https://resumetic.netlify.app -> HTTP 200 | ACAO: [https://resumetic.netlify.app]
