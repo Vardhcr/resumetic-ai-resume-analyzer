@@ -81,6 +81,14 @@ const request = async (method, url, ...args) => {
   }
 };
 
+// Whether the page is being served from a production (deployed) URL rather than
+// a localhost / LAN dev server. Used to tailor error messages for end users.
+const isProductionHost = () => {
+  if (typeof window === "undefined" || !window.location) return true;
+  const hostname = window.location.hostname;
+  return !isPrivateAddress(hostname) && hostname !== "localhost" && hostname !== "127.0.0.1";
+};
+
 const API = {
   get: (url, config) => request("get", url, config),
   post: (url, body, config) => request("post", url, body, config),
@@ -88,6 +96,8 @@ const API = {
   patch: (url, body, config) => request("patch", url, body, config),
   delete: (url, config) => request("delete", url, config),
   defaults: primary.defaults,
+  isProductionHost,
+  PRODUCTION_URL,
 };
 
 export default API;

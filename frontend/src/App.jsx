@@ -98,15 +98,33 @@ function App() {
 
       let msg = "Upload failed. Please try again.";
 
-      if (err.code === "ERR_NETWORK") {
-        msg =
-          "Could not reach the analysis server. If you are on a phone, make sure the phone and computer are on the same Wi-Fi and the backend is running with --host 0.0.0.0.";
-      } else if (err.response?.status === 413) {
-        msg = "The PDF file is too large to upload.";
-      } else if (err.response?.status === 400) {
-        msg = err.response?.data?.detail || "This file could not be accepted. Please upload a valid PDF.";
-      } else if (err.response?.status === 500) {
-        msg = "The server could not process this resume. Please try a different PDF.";
+      // Surface the REAL underlying error so mobile failures can be diagnosed:
+      //  - err.response  => backend answered (non-2xx) — show actual status/detail.
+      //  - err.code      => axios error code (ERR_NETWORK, ERR_BAD_REQUEST...).
+      //  - err.message   => raw message (may already include a useful hint).
+      const status = err.response?.status;
+      const serverDetail = err.response?.data?.detail || err.response?.data?.message;
+
+      if (err.response) {
+        // Backend responded with an error — expose the real status and detail.
+        if (status === 413) {
+          msg = `The PDF file is too large to upload (HTTP 413).`;
+        } else if (status === 400) {
+          msg = serverDetail || "This file could not be accepted. Please upload a valid PDF.";
+        } else if (status === 500) {
+          msg = serverDetail || `The server could not process this resume (HTTP 500). Please try a different PDF.`;
+        } else {
+          msg = serverDetail || `The server returned an error (HTTP ${status}).`;
+        }
+      } else if (err.code === "ERR_NETWORK") {
+        // No response received — network-level failure. Reveal the code and the
+        // backend URL that failed so the cause is not hidden.
+        const attempted = API.defaults.baseURL;
+        if (API.isProductionHost()) {
+          msg = `Network error (${err.code}) while contacting the analysis server (${attempted}). The server may be temporarily unavailable — please wait a moment and try again.`;
+        } else {
+          msg = `Network error (${err.code}) reaching ${attempted}. If you are on a phone, make sure the phone and computer are on the same Wi-Fi and the backend is running with --host 0.0.0.0.`;
+        }
       } else if (err.message) {
         msg = err.message;
       }
