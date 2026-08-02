@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import ATSScoreCard from "./components/ATSScoreCard";
 import ResumeStatistics from "./components/ResumeStatistics";
@@ -36,6 +36,13 @@ function App() {
 
   const openFilePicker = () => fileInputRef.current?.click();
   const openStickyFilePicker = () => stickyFileInputRef.current?.click();
+
+  // Warm up the backend on page load so a sleep-on-idle host (e.g. Railway
+  // free tier) is already awake before the user picks a file to upload.
+  useEffect(() => {
+    API.warmUp?.();
+  }, []);
+
 
   const processFile = async (file) => {
     if (!file) return;
@@ -121,7 +128,7 @@ function App() {
         // backend URL that failed so the cause is not hidden.
         const attempted = API.defaults.baseURL;
         if (API.isProductionHost()) {
-          msg = `Network error (${err.code}) while contacting the analysis server (${attempted}). The server may be temporarily unavailable — please wait a moment and try again.`;
+          msg = `Network error (${err.code}) while contacting the analysis server (${attempted}). The server may be temporarily unavailable — we retried automatically. Please wait a moment and try again.`;
         } else {
           msg = `Network error (${err.code}) reaching ${attempted}. If you are on a phone, make sure the phone and computer are on the same Wi-Fi and the backend is running with --host 0.0.0.0.`;
         }

@@ -46,39 +46,87 @@ const primaryIsProduction = primaryURL === PRODUCTION_URL;
 
 const primary = axios.create({
   baseURL: primaryURL,
-  timeout: 60000,
+  timeout: 90000,
 });
 
 const fallback = axios.create({
   baseURL: PRODUCTION_URL,
-  timeout: 60000,
+  timeout: 90000,
 });
 
 // Expose resolved base URL for debugging (visible in the browser console)
 console.info("[Resumetic] API base URL:", primary.defaults.baseURL);
 
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+// Whether we have already pinged the backend this page-load. Guards against
+// firing multiple warm-up requests (StrictMode double-invokes effects).
+let warmupStarted = false;
+
 /**
- * Wraps requests so that network-level failures against the primary backend
- * automatically retry against the production backend.
+ * Ping the backend with a lightweight request as soon as the page loads so a
+ * sleep-on-idle host (e.g. Railway free tier) is already awake by the time the
+ * user picks a file. Failures are ignored — the retry logic below handles them.
+ */
+const warmUp = async () => {
+  if (warmupStarted) return;
+  warmupStarted = true;
+  try {
+    await primary.get("/", { timeout: 12000 });
+    console.info("[Resumetic] backend warm-up OK:", primary.defaults.baseURL);
+  } catch (err) {
+    // No-op: the real request will retry. Allow a later warm-up attempt.
+    warmupStarted = false;
+    console.warn("[Resumetic] backend warm-up failed:", err.code || err.message);
+  }
+};
+
+/**
+ * Wraps requests so that:
+ *  1. Network-level failures against a LOCAL primary backend automatically
+ *     retry against the production backend (works from a phone on the same
+ *     Wi-Fi when the local backend isn't running or is firewall-blocked).
+ *  2. Network-level failures against the PRODUCTION backend (e.g. Railway
+ *     cold-start wake-up) are retried a few times with backoff before giving
+ *     up, so transient outages self-heal instead of instantly failing.
  *
- * This makes the app work from a phone even when the local backend isn't
- * running, is bound to 127.0.0.1 only, or is blocked by the Windows firewall.
+ * A server response (e.g. 400/413/500) carries real information and is always
+ * surfaced to the user without retrying.
  */
 const request = async (method, url, ...args) => {
-  try {
-    return await primary[method](url, ...args);
-  } catch (err) {
-    // Only fall back for network-level errors (no response received).
-    // A server response (e.g. 400/413/500) carries real information, so
-    // surface it to the user instead of retrying.
-    if (!err.response && !primaryIsProduction) {
-      console.warn(
-        `[Resumetic] ${primary.defaults.baseURL} unreachable, retrying ${PRODUCTION_URL}`
-      );
-      return await fallback[method](url, ...args);
+  const MAX_ATTEMPTS = 3;
+  let lastErr;
+
+  for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+    try {
+      return await primary[method](url, ...args);
+    } catch (err) {
+      // Server responded — real information, do not retry.
+      if (err.response) throw err;
+
+      lastErr = err;
+
+      // Local/dev primary unreachable → fall back to production immediately.
+      if (!primaryIsProduction) {
+        console.warn(
+          `[Resumetic] ${primary.defaults.baseURL} unreachable, retrying ${PRODUCTION_URL}`
+        );
+        return await fallback[method](url, ...args);
+      }
+
+      // Production primary: transient network errors (Railway cold start,
+      // mobile signal drop) are common. Back off and retry before giving up.
+      if (attempt < MAX_ATTEMPTS - 1) {
+        const delay = 2000 * Math.pow(2, attempt); // 2s, 4s
+        console.warn(
+          `[Resumetic] network error (${err.code}) on attempt ${attempt + 1}, retrying in ${delay}ms`
+        );
+        await sleep(delay);
+      }
     }
-    throw err;
   }
+
+  throw lastErr;
 };
 
 // Whether the page is being served from a production (deployed) URL rather than
@@ -98,6 +146,7 @@ const API = {
   defaults: primary.defaults,
   isProductionHost,
   PRODUCTION_URL,
+  warmUp,
 };
 
 export default API;
