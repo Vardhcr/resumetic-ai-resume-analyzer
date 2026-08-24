@@ -12,9 +12,10 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 EMBEDDING_MODEL = "all-MiniLM-L6-v2"
 DEFAULT_OLLAMA_MODEL = "qwen2.5:0.5b"
 
-RAG_PROMPT = """You are DocuMind AI, a friendly, intelligent local document assistant.
-Use ONLY the following retrieved document context to answer the user's question.
-If the answer cannot be found in the context, say: "I could not find the answer in the provided documents."
+RAG_PROMPT = """You are DocuMind AI (named Nifty), a friendly and highly capable local document intelligence assistant.
+Use ONLY the following retrieved document context to answer the user's question accurately.
+If the user asks for a summary, main theme, overview, or key takeaways, provide a clear, structured summary using bullet points.
+If the answer cannot be found in the context and it is a specific fact question, state: "I could not find the answer in the provided documents."
 
 Retrieved Document Context:
 {context}
@@ -27,6 +28,14 @@ User Question:
 
 Detailed Answer:"""
 
+GREETING_RESPONSE = (
+    "👋 Hello! I am **Nifty**, your DocuMind document intelligence assistant.\n\n"
+    "Here is how I can help you with your uploaded documents:\n"
+    "- 📄 **Summarize & Extract Themes**: Ask me for main takeaways, key themes, or section overviews.\n"
+    "- 🔍 **Fact Search**: Ask specific questions about dates, names, numbers, or details in your PDFs.\n"
+    "- 🎯 **Page Citations**: I will show exact page source citations for every answer!"
+)
+
 LIMITATIONS_ANSWER = (
     "📄 **DocuMind AI Limitations:**\n\n"
     "- Runs 100% locally using FAISS vector store, Hugging Face embeddings (`all-MiniLM-L6-v2`), and Ollama LLM.\n"
@@ -36,6 +45,8 @@ LIMITATIONS_ANSWER = (
 CLARIFICATION_ANSWER = "Could you please clarify your question or specify what information you are searching for in your uploaded documents?"
 NOT_FOUND = "I could not find the answer in the provided documents."
 
+GREETING_TERMS = {"hi", "hello", "hey", "greetings", "help", "who", "yourself"}
+OVERVIEW_TERMS = {"theme", "summary", "summarize", "overview", "main", "points", "takeaway", "takeaways", "about", "content", "topic", "topics"}
 FOLLOW_UP_TERMS = {"it", "he", "she", "this", "that", "they", "them", "his", "her", "their", "its", "former", "latter"}
 
 
@@ -47,9 +58,25 @@ def _meaningful_words(text: str) -> set[str]:
     stopwords = {
         "the", "a", "an", "is", "are", "was", "were", "what", "who", "where",
         "when", "how", "why", "in", "on", "at", "to", "for", "of", "with",
-        "and", "or", "about", "tell", "me", "show", "can", "you", "please"
+        "and", "or", "about", "tell", "me", "show", "can", "you", "please", "file", "document"
     }
     return _normalized_words(text) - stopwords
+
+
+def _is_greeting_or_help(question: str) -> bool:
+    words = _normalized_words(question)
+    if words.intersection({"hi", "hello", "hey"}):
+        return True
+    if "help" in words and words.intersection({"can", "how", "you"}):
+        return True
+    if "who" in words and words.intersection({"are", "you"}):
+        return True
+    return False
+
+
+def _is_overview_or_theme_question(question: str) -> bool:
+    words = _normalized_words(question)
+    return bool(words.intersection(OVERVIEW_TERMS))
 
 
 def _is_limitations_question(question: str) -> bool:
@@ -62,7 +89,7 @@ def _is_limitations_question(question: str) -> bool:
 def _is_unclear_question(question: str) -> bool:
     words = _normalized_words(question)
     malformed = "f**" in question.lower() or words.intersection({"f", "fu", "wtf"})
-    return len(words) < 2 or not _meaningful_words(question) or malformed
+    return len(words) < 2 and not _is_greeting_or_help(question) or malformed
 
 
 def _is_follow_up(question: str) -> bool:
@@ -70,9 +97,12 @@ def _is_follow_up(question: str) -> bool:
 
 
 def _has_question_evidence(question: str, documents: List[Document]) -> bool:
+    if _is_overview_or_theme_question(question):
+        return True
+
     question_words = _meaningful_words(question)
     if not question_words:
-        return False
+        return True
 
     context_words = _normalized_words(
         " ".join(
@@ -84,7 +114,7 @@ def _has_question_evidence(question: str, documents: List[Document]) -> bool:
     if question_words.intersection(context_words):
         return True
 
-    if "name" in question_words:
+    if "name" in question_words or "who" in _normalized_words(question):
         has_capitalized_name = any(
             re.search(r"\b[A-Z][a-z]+(?:\s+[A-Z][a-z]+)+\b", doc.page_content)
             for doc in documents
@@ -104,10 +134,11 @@ def _has_question_evidence(question: str, documents: List[Document]) -> bool:
 
 def _retrieve_documents(vector_store: FAISS, question: str) -> List[Document]:
     """Retrieve top relevant document chunks using FAISS similarity search."""
-    semantic = vector_store.similarity_search(question, k=4)
+    search_query = "summary main points key findings overview background" if _is_overview_or_theme_question(question) else question
+    semantic = vector_store.similarity_search(search_query, k=5)
     documents = list(semantic)
-    question_words = _meaningful_words(question)
 
+    question_words = _meaningful_words(question)
     for document in vector_store.docstore._dict.values():
         content_words = _normalized_words(document.page_content)
         overlap = question_words.intersection(content_words)
@@ -116,7 +147,7 @@ def _retrieve_documents(vector_store: FAISS, question: str) -> List[Document]:
             if document not in documents:
                 documents.insert(0, document)
 
-    return documents[:4]
+    return documents[:5]
 
 
 def load_pdfs(pdf_paths: Iterable[Path]) -> List[Document]:
@@ -185,6 +216,9 @@ def answer_question(
 
     if not question:
         raise ValueError("Please enter a question.")
+
+    if _is_greeting_or_help(question):
+        return GREETING_RESPONSE, []
 
     if _is_limitations_question(question):
         return LIMITATIONS_ANSWER, []
