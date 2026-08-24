@@ -215,24 +215,25 @@ selected_model = DEFAULT_OLLAMA_MODEL if DEFAULT_OLLAMA_MODEL in installed_model
 
 # Sidebar Config
 with st.sidebar:
-    st.markdown("### ⚙️ Ollama AI Config")
+    st.markdown("### ⚙️ DocuMind AI Engine")
     if ollama_online:
-        st.success(f"🟢 Ollama Online ({len(installed_models)} models found)")
+        st.success(f"🟢 Ollama Local Active ({len(installed_models)} model(s))")
         model_choice = st.selectbox("Active LLM Model", installed_models if installed_models else [DEFAULT_OLLAMA_MODEL], index=0)
         selected_model = model_choice
     else:
-        st.error("🔴 Ollama Offline. Start Ollama (`ollama serve`).")
-        st.caption("Default model: " + DEFAULT_OLLAMA_MODEL)
+        st.success("🟢 FAISS Cloud RAG Engine Active")
+        st.caption("Mode: Document Vector Retrieval & RAG Active")
 
     st.markdown("---")
     st.markdown("### 💡 Quick Tips")
     st.markdown("- Upload PDF files on the left panel.")
-    st.markdown("- DocuMind will build a FAISS vector index.")
+    st.markdown("- DocuMind builds a FAISS vector index.")
     st.markdown("- Ask any questions in natural language!")
     st.markdown("---")
-    st.caption("DocuMind AI v2.0 · Local RAG")
+    st.caption("DocuMind AI v2.0 · Local & Cloud RAG")
 
 # Top Header
+status_label = f"🟢 Ollama Active ({selected_model})" if ollama_online else "🟢 DocuMind Engine Active"
 st.markdown(
     f"""
     <div class="documind-header">
@@ -240,9 +241,9 @@ st.markdown(
             <h1 class="brand-title">📄 DocuMind AI</h1>
             <div class="brand-sub">SMART DOCUMENT AI · READS FILES &amp; ANSWERS FAST</div>
         </div>
-        <div className="status-pill">
-            <span className="status-dot"></span>
-            <span>{"🟢 Ollama Active (" + selected_model + ")" if ollama_online else "🔴 Ollama Offline"}</span>
+        <div class="status-pill">
+            <span class="status-dot"></span>
+            <span>{status_label}</span>
         </div>
     </div>
     """,
@@ -318,7 +319,7 @@ with right_col:
             if not st.session_state.assistant_intro_shown:
                 st.session_state.chat_history.append({
                     "role": "assistant",
-                    "content": f"👋 Hello! I’m **Nifty**, your DocuMind assistant running with `{selected_model}`. I have indexed your documents. Ask me anything about them!",
+                    "content": f"👋 Hello! I’m **Nifty**, your DocuMind document assistant. I have indexed your documents. Ask me anything about them!",
                     "sources": []
                 })
                 st.session_state.assistant_intro_shown = True
@@ -357,7 +358,7 @@ with right_col:
             st.session_state.assistant_intro_shown = True
 
             try:
-                with st.spinner("Searching document vector store and drafting answer with Ollama..."):
+                with st.spinner("Searching document vector store and drafting answer..."):
                     answer, sources = answer_question(
                         st.session_state.vector_store,
                         user_question,
@@ -382,7 +383,7 @@ with right_col:
 st.markdown(
     """
     <div class="documind-footer">
-        RUNS FULLY OFFLINE &nbsp;·&nbsp; FAISS VECTOR INDEX &nbsp;·&nbsp; HUGGING FACE EMBEDDINGS &nbsp;·&nbsp; OLLAMA LOCAL LLM
+        RUNS FULLY OFFLINE &amp; ONLINE &nbsp;·&nbsp; FAISS VECTOR INDEX &nbsp;·&nbsp; HUGGING FACE EMBEDDINGS &nbsp;·&nbsp; OLLAMA &amp; RAG ENGINE
     </div>
     """,
     unsafe_allow_html=True
