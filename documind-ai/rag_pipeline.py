@@ -12,7 +12,7 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 EMBEDDING_MODEL = "all-MiniLM-L6-v2"
 DEFAULT_OLLAMA_MODEL = "qwen2.5:0.5b"
 
-RAG_PROMPT = """You are DocuMind AI (named Nifty), a friendly and highly capable local document intelligence assistant.
+RAG_PROMPT = """You are DocuMind AI (named Nifty), a friendly and highly capable document intelligence assistant.
 Use ONLY the following retrieved document context to answer the user's question accurately.
 If the user asks for a summary, main theme, overview, or key takeaways, provide a clear, structured summary using bullet points.
 If the answer cannot be found in the context and it is a specific fact question, state: "I could not find the answer in the provided documents."
@@ -38,7 +38,7 @@ GREETING_RESPONSE = (
 
 LIMITATIONS_ANSWER = (
     "📄 **DocuMind AI Limitations:**\n\n"
-    "- Runs 100% locally using FAISS vector store, Hugging Face embeddings (`all-MiniLM-L6-v2`), and Ollama LLM.\n"
+    "- Runs locally using FAISS vector store, Hugging Face embeddings (`all-MiniLM-L6-v2`), and Ollama LLM.\n"
     "- Answers are strictly grounded in text extracted from your uploaded PDFs.\n"
     "- Performance depends on PDF text legibility and your local Ollama model capabilities."
 )
@@ -248,6 +248,12 @@ def answer_question(
 
     context = "\n\n".join(context_parts)
 
+    unique_sources = []
+    for document in retrieved:
+        label = _source_label(document)
+        if label not in unique_sources:
+            unique_sources.append(label)
+
     prompt = PromptTemplate.from_template(RAG_PROMPT)
     final_prompt = prompt.format(
         context=context,
@@ -258,16 +264,12 @@ def answer_question(
     try:
         llm = OllamaLLM(model=model_name, temperature=0.2)
         answer = llm.invoke(final_prompt)
+        return str(answer).strip(), unique_sources
     except Exception as exc:
-        raise RuntimeError(
-            f"Ollama could not be reached on model '{model_name}'. "
-            f"Ensure Ollama service is active. Error: {exc}"
-        ) from exc
-
-    unique_sources = []
-    for document in retrieved:
-        label = _source_label(document)
-        if label not in unique_sources:
-            unique_sources.append(label)
-
-    return str(answer).strip(), unique_sources
+        # Seamless cloud fallback if Ollama service is not running on web host
+        extracted_summary = "\n\n".join([f"• **Excerpt {i+1}** ({_source_label(doc)}):\n{doc.page_content[:300]}..." for i, doc in enumerate(retrieved)])
+        fallback_answer = (
+            f"📄 **Key Information Found in Documents:**\n\n{extracted_summary}\n\n"
+            f"*(Note: Ollama LLM was unavailable, so direct FAISS document excerpts are provided above).* "
+        )
+        return fallback_answer, unique_sources
