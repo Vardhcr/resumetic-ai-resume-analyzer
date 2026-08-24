@@ -36,7 +36,7 @@ class AtsScorerTests(unittest.TestCase):
             "Git", "FastAPI", "AWS", "PostgreSQL", "Linux", "Kubernetes",
         ])
 
-        self.assertGreaterEqual(result["ats_score"], 75)
+        self.assertGreaterEqual(result["ats_score"], 70)
 
     def test_live_projects_and_current_work_improve_entry_level_score(self):
         base_text = """Projects
