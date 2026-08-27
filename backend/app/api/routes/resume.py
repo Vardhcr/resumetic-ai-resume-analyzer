@@ -13,6 +13,7 @@ from app.services.recommendation_engine import generate_recommendations
 from app.services.response_builder import response_builder
 from app.services.jd_matcher import jd_matcher
 from app.services.ollama_service import get_ollama_status, chat_with_ollama
+from app.services.skill_gap_analyzer import analyze_job_gap
 
 router = APIRouter()
 
@@ -31,6 +32,11 @@ class JDMatchRequest(BaseModel):
     resume_text: str
     jd_text: str
 
+class JobGapRequest(BaseModel):
+    resume_text: str
+    jd_text: str
+    job_title: Optional[str] = None
+    resume_skills: Optional[List[str]] = None
 
 @router.get("/test")
 def test_resume_route():
@@ -73,6 +79,33 @@ def match_job_description(payload: JDMatchRequest):
     return {
         "success": True,
         "data": match_result
+    }
+
+@router.post("/job-gap")
+def job_gap_analysis(payload: JobGapRequest):
+    """Analyzes the skill gap between a resume and a target job."""
+    if not payload.resume_text or not payload.resume_text.strip():
+        raise HTTPException(
+            status_code=400,
+            detail="Resume text is required for job gap analysis."
+        )
+
+    if not payload.jd_text or not payload.jd_text.strip():
+        raise HTTPException(
+            status_code=400,
+            detail="Job description text is required for job gap analysis."
+        )
+
+    result = analyze_job_gap(
+        resume_text=payload.resume_text,
+        jd_text=payload.jd_text,
+        job_title=payload.job_title,
+        resume_skills=payload.resume_skills
+    )
+
+    return {
+        "success": True,
+        "data": result
     }
 
 

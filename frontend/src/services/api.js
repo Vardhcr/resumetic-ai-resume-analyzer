@@ -2,6 +2,7 @@ import axios from "axios";
 
 const PRODUCTION_URL = "https://resumetic-ai-resume-analyzer-production.up.railway.app";
 
+
 const isPrivateAddress = (hostname) => {
   if (hostname === "localhost" || hostname === "127.0.0.1") return true;
   if (/^(\d{1,3}\.){3}\d{1,3}$/.test(hostname)) {
@@ -142,6 +143,22 @@ const matchJobDescription = async (resumeText, jdText) => {
   return res.data;
 };
 
+const analyzeJobGap = async ({
+  resumeText,
+  jdText,
+  jobTitle,
+  resumeSkills
+}) => {
+  const res = await request("post", "/resume/job-gap", {
+    resume_text: resumeText,
+    jd_text: jdText,
+    job_title: jobTitle || null,
+    resume_skills: resumeSkills || []
+  });
+
+  return res.data;
+};
+
 const API = {
   get: (url, config) => request("get", url, config),
   post: (url, body, config) => request("post", url, body, config),
@@ -154,7 +171,8 @@ const API = {
   warmUp,
   checkOllamaStatus,
   sendChatMessage,
-  matchJobDescription
+  matchJobDescription,
+  analyzeJobGap
 };
 
 export default API;
